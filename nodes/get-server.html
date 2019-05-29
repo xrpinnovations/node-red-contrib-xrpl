@@ -1,0 +1,51 @@
+<script type="text/x-red" data-template-name="get-server">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Node Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Node Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-testnet"><i class="fa fa-tag"></i> Use TestNet?</label>
+        <input type="checkbox" checked id="node-config-input-testnet" placeholder="Use TestNet?">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-subscribe"><i class="fa fa-tag"></i> Subscribe to Addresses (Array)</label>
+        <input type="text" id="node-config-input-subscribe" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="get-server">
+  <!-- data-help-name identifies the node type this help is for             -->
+  <!-- This content appears in the Info sidebar when a node is selected     -->
+  <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
+  <!-- node in the palette.                                                 -->
+  <p>This node queries the XRP ledger for the summary information of an XRP account</p>
+  <h3>Input</h3>
+   <p>
+     Input can either be recieved as an object via <b>msg.payload</b>, or set within the node interface.
+   </p>
+   <ul>
+     <li> <b>TestNet / msg.payload.testnet</b> : [Boolean] If set to True then the test network will be used for the query.</li>
+   </ul>
+  <h3>Output</h3>
+   <p><b>msg</b>. An object containing either of the following:</p>
+   <ul>
+     <li> <b>msg.payload</b>. [Object] Containing the XRP account information</li>
+     <li> <b>msg.error</b>. [String] Contains any error messages. </li>
+   </ul>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- The example below shows a small subset of the properties that can be set-->
+<script type="text/javascript">
+    RED.nodes.registerType('get-server',{
+    category: "config",      // the palette category
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},   //  along with default values.
+            subscribe: {value:[]},   //  along with default values.
+            testnet: {value:true}
+        },
+        label: function() {
+          return this.name || this.url;
+        },
+    });
+</script>

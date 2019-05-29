@@ -1,0 +1,58 @@
+{
+  "name": "node-red-contrib-xrpl",
+  "version": "0.1.0",
+  "description": "Node-RED xrp ledger module",
+  "dependencies": {
+    "ripple-lib": "^1.2.3",
+    "ripple-bip32": "^0.0.3",
+    "bip39": "^3.0.2",
+    "qrcode": "^1.3.3"
+  },
+  "devDependencies": {
+    "eslint": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xrpinnovations/node-red-contrib-xrpl"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node-red",
+    "xrp",
+    "xrpl",
+    "blockchain",
+    "dlt",
+    "ripple",
+    "crypto currency",
+    "digital asset",
+    "automation"
+  ],
+  "node-red": {
+    "nodes": {
+      "check valid address": "nodes/check-valid-address.js",
+      "get account": "nodes/get-account.js",
+      "get account transactions": "nodes/get-account-transactions.js",
+      "get transaction": "nodes/get-transaction.js",
+      "send xrp": "nodes/send-xrp.js",
+      "prepare transaction": "nodes/prepare-transaction.js",
+      "sign transaction": "nodes/sign-transaction.js",
+      "submit signed transaction": "nodes/submit-signed-transaction.js",
+      "generate xrp mnemonic account": "nodes/generate-account-with-mnemonic.js",
+      "generate xrp secret account": "nodes/generate-account-with-secret.js",
+      "generate qr code": "nodes/generate-qrcode.js",
+      "get server": "nodes/get-server.js",
+      "receive transaction": "nodes/receive-transaction.js",
+      "prepare escrow creation": "nodes/prepare-escrow-creation.js",
+      "prepare escrow cancellation": "nodes/prepare-escrow-cancellation.js",
+      "prepare escrow execution": "nodes/prepare-escrow-execution.js"
+    }
+  },
+  "author": {
+    "name": "Gazos",
+    "email": "gazos@xrpi.io",
+    "url": "https://xrpi.io"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  }
+}

@@ -1,0 +1,165 @@
+<script type="text/x-red" data-template-name="send-xrp">
+  <div class="form-row">
+      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+      <input type="text" id="node-input-server">
+  </div>
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
+      <input type="text" id="node-input-name" placeholder="Node Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-sender"><i class="fa fa-tag"></i> Sender Address (From)</label>
+      <input type="hidden" id="node-input-override_payload" />
+      <input type="text" id="node-input-sender" placeholder="rwuMp76ht6dmGvipxwKr5ZE6VpF7ZKC7qs">
+  </div>
+  <div class="form-row">
+      <label for="node-input-secret"><i class="fa fa-tag"></i> Secret (Family Seed)</label>
+      <input type="password" id="node-input-secret" placeholder="Used to sign the transaction">
+  </div>
+  <div class="form-row">
+      <label for="node-input-destination"><i class="fa fa-tag"></i> Destination Address (To)</label>
+      <input type="text" id="node-input-destination" placeholder="rwuMp76ht6dmGvipxwKr5ZE6VpF7ZKC7qs">
+  </div>
+  <div class="form-row">
+      <label for="node-input-tag"><i class="fa fa-tag"></i> Destination Tag</label>
+      <input type="text" id="node-input-tag" placeholder="123456">
+  </div>
+  <div class="form-row">
+      <label for="node-input-amount"><i class="fa fa-tag"></i> Amount (XRP)</label>
+      <input type="text" id="node-input-amount" placeholder="">
+  </div>
+  <div class="form-row">
+      <label for="node-input-memos"><i class="fa fa-tag"></i> Memos</label>
+      <input type="text" id="node-input-memos" placeholder="">
+  </div>
+  <div class="form-row">
+      <label for="node-input-invoiceID"><i class="fa fa-tag"></i> InvoiceID</label>
+      <input type="text" id="node-input-invoiceID" placeholder="">
+  </div>
+  <div class="form-row">
+      <p>Wait For Validation</p>
+      <label for="node-input-validate" style="width:128px"><i class="fa fa-tag"></i> Enable?</label>
+      <input type="checkbox" id="node-input-validate"  style="width:58px" placeholder="Wait For Validation?">
+
+      <label for="node-input-waitTime" style="text-align:right; width:100px">><i class="fa fa-tag"></i> Wait Time</label>
+      <input type="text" id="node-input-waitTime" style="width:128px" placeholder="Add the seconds you wish to wait for validation">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="send-xrp">
+   <p>This node allows you to send XRP to another account. Memo, Destination Tag, InvoiceID fields all supported</p>
+  <a href='https://developers.ripple.com/payment.html'>XRP API</a>
+   <h3>Inputs</h3>
+   <p>
+     Set via <b>msg.payload</b>, or set within the node interface.
+   </p>
+    <dl class="message-properties">
+        <dt>sender / payload.sender
+            <span class="property-type">String</span>
+        </dt>
+        <dd> The source XRP address that will be used to send XRP.</dd>
+        <dt>destination / payload.destination
+            <span class="property-type">String</span>
+        </dt>
+        <dd> The destination XRP address that will receive XRP.</dd>
+        <dt>amount / payload.amount
+            <span class="property-type">String</span>
+        </dt>
+        <dd> The amount of XRP to send.</dd>
+        <dt>secret / payload.secret
+            <span class="property-type">String</span>
+        </dt>
+        <dd> The secret used to sign the transaction. <p style='color:red;'><b>NOTE!!!</b></p> If stored within the node then exporting the flow won't expose your secret key however if stored within a function THIS WILL be exposed if exporting your flow to be shared or storing your flows on repositories!!</dd>
+        <dt class="optional">tag / payload.tag
+            <span class="property-type">int</span>
+        </dt>
+        <dd> The destination tag.</dd>
+        <dt class="optional">memos / payload.memos
+            <span class="property-type">string</span>
+        </dt>
+        <dd> A memo string to add to the transaction. Maximum 1013 bytes.</dd>
+        <dt class="optional">invoiceID / payload.invoiceID
+            <span class="property-type">string</span>
+        </dt>
+        <dd> InvoiceID to add to the transaction. Must be a 256 Hash.</dd>
+        <dt class="optional">validate / payload.validate
+            <span class="property-type">boolean</span>
+        </dt>
+        <dd> If set the node will wait a default of 6 seconds for confirmation of a successfull transaction.</dd>
+        <dt class="optional">waitTime / payload.waitTime
+            <span class="property-type">int</span>
+        </dt>
+        <dd> The time in seconds to wait for confirmation if validate is enabled.</dd>
+    </dl>
+
+   <h3>Output</h3>
+    <dl class="message-properties">
+        <dt>payload
+            <span class="property-type">Object</span>
+        </dt>
+        <dd> Contains further objects if successfull.</dd>
+        <dt>payload.signedTX
+            <span class="property-type">Object</span>
+        </dt>
+        <dd> Contains the signed transaction to be submitted.</dd>
+        <dt>payload.resultTX
+            <span class="property-type">Object</span>
+        </dt>
+        <dd> Contains the response after submitting the signed transaction to the ledger.</dd>
+        <dt>payload.validateTX
+            <span class="property-type">Object</span>
+        </dt>
+        <dd> Contains the result of the transaction if validate is selected. <p style='color:blue;'><b>Note</b></p> The transaction may still be successfull if you receive a missingledger message, you may need to just wait a little longer, check the ledger.</dd>
+        <dt>error
+            <span class="property-type">String</span>
+        </dt>
+        <dd> Contains any error messages.</dd>
+    </dl>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('send-xrp',{
+        category: 'XRPL',      // the palette category
+        color: "#52C0F2",
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},   //  along with default values.
+            sender: {value:""},
+            destination: {value:""},
+            tag: {value:""},
+            validate: {value:false},
+            waitTime: {value: 7},
+            amount: {value:""},
+            memos: { value: ""},
+            invoiceID: { value: ""},
+            server: {value:"", type:"get-server"}
+        },
+        credentials: {
+           secret: {type:"password"}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "xrp.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||"Send XRP";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+          const $sender = $("#node-input-sender");
+
+          $sender
+            .typedInput({
+              types: ["msg", "flow", "global", NoneType],
+              typeField: "#node-input-override_payload"
+            })
+            .typedInput("width", "68%");
+
+          $sender.val("payload");
+          $("#node-input-override_payload").val(
+            node.override_payload === false ? "none" : "msg"
+          );
+        }
+    });
+</script>

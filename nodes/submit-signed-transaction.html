@@ -1,0 +1,69 @@
+<script type="text/x-red" data-template-name="submit-signed-transaction">
+  <div class="form-row">
+      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+      <input type="text" id="node-input-server">
+  </div>
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-signedTransaction"><i class="fa fa-tag"></i> Signed Transaction</label>
+      <input type="text" id="node-input-signedTransaction" placeholder="Signed Transaction To Submit">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="submit-signed-transaction">
+  <p> Submits a signed transaction. The transaction is not guaranteed to succeed; it must be verified with get-transaction.
+  <a href='https://developers.ripple.com/rippleapi-reference.html#submit'>See XRP API</a>
+  <h3>Inputs</h3>
+  <p>
+    Set via <b>msg.payload</b>, or set within the node interface.
+  </p>
+   <dl class="message-properties">
+       <dt>signedTransaction / payload.signedTransaction
+           <span class="property-type">String</span>
+       </dt>
+       <dd> The signed transaction to be submitted to the ledger.</dd>
+   </dl>
+
+  <h3>Output</h3>
+   <dl class="message-properties">
+       <dt>payload
+           <span class="property-type">Object</span>
+       </dt>
+       <dd> Contains further objects if successfull.</dd>
+       <dt>payload.resultTX
+           <span class="property-type">Object</span>
+       </dt>
+       <dd> Contains the response after submitting the signed transaction to the ledger.</dd>
+       <dt>error
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Contains any error messages.</dd>
+   </dl>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- The example below shows a small subset of the properties that can be set-->
+<script type="text/javascript">
+    RED.nodes.registerType('submit-signed-transaction',{
+        category: 'XRPL Advanced',      // the palette category
+        color: "#52C0F2",
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},   //  along with default values.
+            signedTransaction: {value:""},
+            server: {value:"", type:"get-server"}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "plane.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||"Submit Signed Transaction";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

@@ -1,0 +1,104 @@
+<!-- //https://developers.ripple.com/rippleapi-reference.html#escrow-creation
+// amount	value	Amount of XRP for sender to escrow.
+// destination	address	Address to receive escrowed XRP.
+// allowCancelAfter	date-time string	Optional If present, the escrow may be cancelled after this time.
+// allowExecuteAfter	date-time string	Optional If present, the escrow can not be executed before this time.
+// condition	string	Optional A hex value representing a PREIMAGE-SHA-256 crypto-condition . If present, fulfillment is required upon execution.
+// destinationTag	integer	Optional Destination tag.
+// memos	memos	Optional Array of memos to attach to the transaction.
+// sourceTag	integer	Optional Source tag. -->
+
+<script type="text/x-red" data-template-name="prepare-escrow-creation">
+  <div class="form-row">
+      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+      <input type="text" id="node-input-server">
+  </div>
+  <div class="form-row">
+      <label for="node-input-amount"><i class="fa fa-tag"></i> Amount</label>
+      <input type="text" id="node-input-amount">
+  </div>
+  <div class="form-row">
+      <label for="node-input-address"><i class="fa fa-tag"></i> Account</label>
+      <input type="text" id="node-input-address" placeholder="address">
+  </div>
+  <div class="form-row">
+      <label for="node-input-destination"><i class="fa fa-tag"></i> Destination</label>
+      <input type="text" id="node-input-destination" placeholder="destination">
+  </div>
+  <div class="form-row">
+      <label for="node-input-destinationTag"><i class="fa fa-tag"></i> Destination Tag [Optional]</label>
+      <input type="text" id="node-input-destinationTag" placeholder="destinationTag">
+  </div>
+  <div class="form-row">
+      <label for="node-input-allowCancelAfter"><i class="fa fa-tag"></i> Allow Cancel After [Optional]</label>
+      <input type="text" id="node-input-allowCancelAfter" placeholder="allowCancelAfter">
+  </div>
+  <div class="form-row">
+      <label for="node-input-allowExecuteAfter"><i class="fa fa-tag"></i> Allow Execute After [Optional]</label>
+      <input type="text" id="node-input-allowExecuteAfter" placeholder="allowExecuteAfter">
+  </div>
+  <div class="form-row">
+      <label for="node-input-condition"><i class="fa fa-tag"></i> Condition [Optional]</label>
+      <input type="text" id="node-input-condition" placeholder="condition">
+  </div>
+  <div class="form-row">
+      <label for="node-input-memos"><i class="fa fa-tag"></i> Memos [Optional]</label>
+      <input type="text" id="node-input-memos" placeholder="memos">
+  </div>
+  <div class="form-row">
+      <label for="node-input-sourceTag"><i class="fa fa-tag"></i> Source Tag [Optional]</label>
+      <input type="text" id="node-input-sourceTag" placeholder="sourceTag">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="prepare-escrow-creation">
+  <p>Prepare an escrow creation transaction. The prepared transaction must subsequently be signed and submitted.</p>
+ <a href='https://developers.ripple.com/rippleapi-reference.html#prepareescrowcreation'>See XRP API</a>
+  <h3>Inputs</h3>
+  <p>
+    TODO
+  </p>
+
+  <h3>Output</h3>
+  <p>TODO</p>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- The example below shows a small subset of the properties that can be set-->
+<script type="text/javascript">
+    RED.nodes.registerType('prepare-escrow-creation',{
+      category: 'XRPL Advanced',      // the palette category
+      color: "#e2d96e",
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},
+            address: {value:""},
+            server: {value:"", type:"get-server"},
+            amount: {value:""},
+            destination: {value:""},
+            allowCancelAfter: {value:""},
+            allowExecuteAfter: {value:""},
+            condition: {value:""},
+            destinationTag: {value:""},
+            memos: {value:""},
+            sourceTag: {value:""}
+            // amount	value	Amount of XRP for sender to escrow.
+            // destination	address	Address to receive escrowed XRP.
+            // allowCancelAfter	date-time string	Optional If present, the escrow may be cancelled after this time.
+            // allowExecuteAfter	date-time string	Optional If present, the escrow can not be executed before this time.
+            // condition	string	Optional A hex value representing a PREIMAGE-SHA-256 crypto-condition . If present, fulfillment is required upon execution.
+            // destinationTag	integer	Optional Destination tag.
+            // memos	memos	Optional Array of memos to attach to the transaction.
+            // sourceTag	integer	Optional Source tag. -->
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "create.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||"Prepare Escrow Creation";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

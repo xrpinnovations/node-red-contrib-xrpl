@@ -1,0 +1,85 @@
+<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- The example below shows a small subset of the properties that can be set-->
+<script type="text/javascript">
+    RED.nodes.registerType('prepare-transaction',{
+        category: 'XRPL Advanced',      // the palette category
+        color: "#c0deed",
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},   //  along with default values.
+            transaction: {value:""},
+            transactionType:  { value:"msg"},
+            instruction: {value:""},
+            instructionType:  { value:"msg"},
+            server: {value:"", type:"get-server"}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "myicon.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||"Prepare Transaction";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+          $("#node-input-transaction").typedInput({ default: 'msg', types: ['msg', 'json'],  typeField: $("#node-input-transactionType")  });
+          $("#node-input-instruction").typedInput({ default: 'msg', types: ['msg', 'json'],  typeField: $("#node-input-instructionType")  });
+}
+    });
+</script>
+<script type="text/x-red" data-template-name="prepare-transaction">
+  <div class="form-row">
+      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+      <input type="text" id="node-input-server">
+  </div>
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-transaction"><i class="fa fa-tag"></i> Transaction</label>
+      <input type="text" id="node-input-transaction" style="width: 70%" placeholder="">
+      <input type="hidden" id="node-input-transactionType">
+  </div>
+  <div class="form-row">
+      <label for="node-input-instruction"><i class="fa fa-tag"></i> Instruction</label>
+      <input type="text" id="node-input-instruction" style="width: 70%" placeholder="">
+      <input type="hidden" id="node-input-instructionType">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="prepare-transaction">
+  <p>This node allows you to prepare a transaction.</p>
+ <a href='https://developers.ripple.com/rippleapi-reference.html#preparetransaction'>XRP API</a>
+  <h3>Inputs</h3>
+  <p>
+    Set via <b>msg.payload</b>, or set within the node interface.
+  </p>
+   <dl class="message-properties">
+       <dt>transaction / payload.transaction
+           <span class="property-type">JSON</span>
+       </dt>
+       <dd> The transaction JSON to be prepared for submission. See the Ripple API docs</dd>
+       <dt class="optional">instructions / payload.instructions
+           <span class="property-type">JSON</span>
+       </dt>
+       <dd> The instructions to be set. Defaults are used if not set. <p style='color:blue;'><b>Note</b></p> If used in offline mode you must specify the fee, sequence, and maxLedgerVersion parameters in the transaction instructions.</dd>
+   </dl>
+
+  <h3>Output</h3>
+   <dl class="message-properties">
+       <dt>payload
+           <span class="property-type">Object</span>
+       </dt>
+       <dd> Contains further objects if successfull.</dd>
+       <dt>payload.txJSON
+           <span class="property-type">Object</span>
+       </dt>
+       <dd> Contains the prepared transaction</dd>
+       <dt>error
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Contains any error messages.</dd>
+   </dl>
+</script>

@@ -1,0 +1,75 @@
+<script type="text/x-red" data-template-name="sign-transaction">
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-txjson"><i class="fa fa-tag"></i> Prepared Transaction</label>
+      <input type="text" id="node-input-txjson" placeholder="Prepared Transaction">
+  </div>
+  <div class="form-row">
+      <label for="node-input-secret"><i class="fa fa-tag"></i> Secret or Keypair</label>
+      <input type="password" id="node-input-secret" placeholder="Used to sign the transaction">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="sign-transaction">
+  <p>This node is used to sign a prepared transaction
+    <a href='https://developers.ripple.com/rippleapi-reference.html#sign'>See XRP API</a>
+  <h3>Inputs</h3>
+  <p>
+    Set via <b>msg.payload</b>, or set within the node interface.
+  </p>
+   <dl class="message-properties">
+       <dt>transaction/ payload.transaction
+           <span class="property-type">JSON</span>
+       </dt>
+       <dd> The prepared transation to be signed.</dd>
+       <dd> The amount of XRP to send.</dd>
+       <dt>secret / payload.secret
+           <span class="property-type">String</span>
+       </dt>
+   </dl>
+
+  <h3>Output</h3>
+   <dl class="message-properties">
+       <dt>payload
+           <span class="property-type">Object</span>
+       </dt>
+       <dd> Contains further objects if successfull.</dd>
+       <dt>payload.signedTX
+           <span class="property-type">Object</span>
+       </dt>
+       <dd> Contains the signed transaction to be submitted.</dd>
+       <dt>error
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Contains any error messages.</dd>
+   </dl>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- The example below shows a small subset of the properties that can be set-->
+<script type="text/javascript">
+    RED.nodes.registerType('sign-transaction',{
+        category: 'XRPL Advanced',      // the palette category
+        color: "#c0deed",
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},   //  along with default values.
+            txjson: {value:""}
+        },
+        credentials: {
+           secret: {type:"password"}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "sign.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||"Sign Transaction";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>

@@ -1,0 +1,60 @@
+<script type="text/x-red" data-template-name="prepare-escrow-cancellation">
+  <div class="form-row">
+      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+      <input type="text" id="node-input-server">
+  </div>
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
+      <input type="text" id="node-input-name" placeholder="Node Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-address"><i class="fa fa-tag"></i> Address</label>
+      <input type="text" id="node-input-address" placeholder="XRP Address">
+  </div>
+  <div class="form-row">
+      <label for="node-input-escrowSequence"><i class="fa fa-tag"></i> Escrow Sequence</label>
+      <input type="text" id="node-input-escrowSequence" placeholder="escrowSequence">
+  </div>
+  <div class="form-row">
+      <label for="node-input-memos"><i class="fa fa-tag"></i> Memos</label>
+      <input type="text" id="node-input-memos" placeholder="memos">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="prepare-escrow-cancellation">
+  <p>Prepare an escrow cancellation transaction. The prepared transaction must subsequently be signed and submitted.</p>
+ <a href='https://developers.ripple.com/rippleapi-reference.html#prepareescrowcancellation'>See XRP API</a>
+  <h3>Inputs</h3>
+  <p>
+    TODO
+  </p>
+
+  <h3>Output</h3>
+  <p>TODO</p>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<!-- The example below shows a small subset of the properties that can be set-->
+<script type="text/javascript">
+    RED.nodes.registerType('prepare-escrow-cancellation',{
+      category: 'XRPL Advanced',      // the palette category
+      color: "#e2d96e",
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},
+            address: {value:""},
+            server: {value:"", type:"get-server"},
+            escrowSequence: {value:""},
+            memos: {value:""}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "cancel.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name||"Prepare Escrow Cancellation";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
