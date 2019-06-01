@@ -2,7 +2,7 @@
 File:               generate-qrcode.js
 Author:             Gazos <gazos@xrpi.io>
 Date:               02/04/19
-Last Modified Date: 28/05/19
+Last Modified Date: 02/06/19
 Last Modified By:   Gazos <gazos@xrpi.io>
 */
 
@@ -31,7 +31,7 @@ module.exports = function(RED) {
 
           try {
 
-            QRCode.toDataURL(msg.payload, {margin: 0,  color: {dark: '#FFF', light: '#0000'}})
+            QRCode.toDataURL(msg.payload, {margin: 1,  color: {dark: '#000000ff', light: '#ffffffff'}})
               .then(url => {
                 msg.payload = url;
                 this.send(msg);
