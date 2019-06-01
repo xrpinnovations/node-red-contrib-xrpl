@@ -16,13 +16,15 @@ Node-Red can be installed on pretty much any device, have an old laptop or even 
 - Prepare a transaction for signing
 - Sign a prepared transaction
 - View the result in both text form and QR format
+- Customise to your own liking
+- Get an idea of how simple and easy this is
 
 #### Prerequisites
 - Node-RED
 - <a href="offline_sign_tool.json" target="_blank">This flow</a>
 - <a href="https://flows.nodered.org/node/node-red-dashboard">The node-red-dashboard package</a>
 
-Once you have your signed transaction you can then copy this to an online submission tool connected to a rippled server to be published to the XRP Ledger.
+Once you have your signed transaction you can then copy this to an online submission tool connected to a rippled server to be published to the XRP Ledger. Even better why not build your own using these nodes??
 
 This flow is an example of the different types of flows which can be created. Please test your flows on the testnet before trying with the livenet.
 
