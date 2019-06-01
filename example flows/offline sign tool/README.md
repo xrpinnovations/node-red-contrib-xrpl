@@ -1,11 +1,11 @@
 <h4 align="center">  
-<a href="https://xrpi.io" target="_blank"><img src="images/logo.png" width="200"></a>  
+<a href="https://xrpi.io" target="_blank"><img src="../../images/logo.png" width="200"></a>  
 <br>  
 Redefining the future one integration at a time  
 </h4>  
 
 <h3 align="center">  
-<a href="offline%20sign%20tool.json" target="_blank">Offline Sign Tool</a>
+<a href="offline_sign_tool.json" target="_blank">Offline Sign Tool</a>
 </h3>  
 
 Why not create your own XRP Ledger offline sign tool?
@@ -19,7 +19,7 @@ Node-Red can be installed on pretty much any device, have an old laptop or even 
 
 #### Prerequisites
 - Node-RED
-- <a href="offline%20sign%20tool.json" target="_blank">This flow</a>
+- <a href="offline_sign_tool.json" target="_blank">This flow</a>
 - <a href="https://flows.nodered.org/node/node-red-dashboard">The node-red-dashboard package</a>
 
 Once you have your signed transaction you can then copy this to an online submission tool connected to a rippled server to be published to the XRP Ledger.
