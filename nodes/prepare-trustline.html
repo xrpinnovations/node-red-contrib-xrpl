@@ -1,0 +1,424 @@
+<script type="text/x-red" data-template-name="prepare-trustline">
+  <div class="form-row" title="Custom name to apply to this node">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
+      <input type="text" id="node-input-name" placeholder="Node Name">
+  </div>
+
+  <div class="form-row">
+      <h3>Transaction</h3>
+  </div>
+  <div class="form-row" title="Which rippled server to connect to? Leaving blank defaults to offline mode">
+      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+      <input type="text" id="node-input-server">
+  </div>
+
+  <div class='form-row' title='The address of the account that is creating the transaction.'>
+      <label for='node-input-address'><i class='fa fa-tag'></i> Address</label>
+      <input type='text' id='node-input-address' placeholder=''>
+  </div>
+
+  <!-- -------------------------------------------------------------- -->
+  <!-- Add Trustline                                                  -->
+  <!-- -------------------------------------------------------------- -->
+  <div class='form-row' title='The currency this trustline applies to. '>
+      <label for='currency'><i class='fa fa-tag'></i> Currency</label>
+      <input type='text' id='currency' placeholder=''>
+  </div>
+  <div class='form-row' title='The address of the account this trustline extends trust to. '>
+      <label for='counterparty'><i class='fa fa-tag'></i> Counterparty</label>
+      <input type='text' id='counterparty' placeholder=''>
+  </div>
+  <div class='form-row' title='The maximum amount that the owner of the trustline can be owed through the trustline. '>
+      <label for='limit'><i class='fa fa-tag'></i> Limit</label>
+      <input type='text' id='limit' placeholder=''>
+  </div>
+  <div class='form-row' title='Optional If true, authorize the counterparty to hold issuances from this account. '>
+      <label for='authorized'><i class='fa fa-tag'></i> Authorized</label>
+      <select id="authorized">
+        <option value=''>Unset</option>
+        <option value='true'>True</option>
+        <option value='false'>False</option>
+      </select>
+  </div>
+  <div class='form-row' title='Optional If true, the trustline is frozen, which means that funds can only be sent to the owner. '>
+      <label for='frozen'><i class='fa fa-tag'></i> Frozen</label>
+      <select id="frozen">
+        <option value=''>Unset</option>
+        <option value='true'>True</option>
+        <option value='false'>False</option>
+      </select>
+  </div>
+  <div class='form-row' title='Optional Incoming balances on this trustline are valued at this ratio. '>
+      <label for='qualityIn'><i class='fa fa-tag'></i> Quality In</label>
+      <input type='text' id='qualityIn' placeholder=''>
+  </div>
+  <div class='form-row' title='Optional Outgoing balances on this trustline are valued at this ratio. '>
+      <label for='qualityOut'><i class='fa fa-tag'></i> Quality Out</label>
+      <input type='text' id='qualityOut' placeholder=''>
+  </div>
+    <div class='form-row' title='Optional If true, payments cannot ripple through this trustline. '>
+        <label for='ripplingDisabled'><i class='fa fa-tag'></i> Rippling Disabled</label>
+        <select id="ripplingDisabled">
+            <option value=''>Unset</option>
+            <option value='true'>True</option>
+            <option value='false'>False</option>
+        </select>
+    </div>
+
+  <!-- -------------------------------------------------------------- -->
+  <!-- Add Memos                                                      -->
+  <!-- -------------------------------------------------------------- -->
+  <div class="form-row" id="add-memo-container">
+    <h4>Add A Memo Field</h4>
+    <div>
+        <!-- Format Value -->
+        <div class="form-row" title="Optional Conventionally containing information on how the memo is encoded, for example as a MIME type . Only characters allowed in URLs are permitted.">
+            <label for="memo-format-value"><i class="fa fa-tag"></i> Format</label>
+            <input type="text" id="memo-format-value" />
+        </div>
+
+        <!-- Type Value -->
+        <div class="form-row">
+            <label for="memo-type-value" title="Optional Conventionally, a unique relation (according to RFC 5988 ) that defines the format of this memo. Only characters allowed in URLs are permitted."><i class="fa fa-tag"></i> Type</label>
+            <input type="text" id="memo-type-value" />
+        </div>
+
+        <!-- Data Value -->
+        <div class="form-row" title="Optional Arbitrary string, conventionally containing the content of the memo.">
+            <label for="memo-data-value"><i class="fa fa-tag"></i> Data</label>
+            <input type="text" id="memo-data-value" />
+        </div>
+
+        <!-- Add Memo Button -->
+        <div class="form-row">
+            <button id="memo-add-btn" style="width: 100%">Add Memo</button>
+        </div>
+
+        <!-- Memo List -->
+        <div class="form-row">
+            <ol id="memo-list"></ol>
+        </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- -------------------------------------------------------------- -->
+  <!-- Add Instructions                                               -->
+  <!-- -------------------------------------------------------------- -->
+  <div class="form-row" id="add-instruction-container">
+      <h4>Add An Instruction</h4>
+      <div>
+          <!-- Fee Value -->
+          <div class="form-row" title="Optional An exact fee to pay for the transaction. See Transaction Fees for more information.">
+              <label for="instructions-fee"><i class="fa fa-tag"></i> Fee (Drops)</label>
+              <input type="text" id="instructions-fee" />
+          </div>
+
+          <!-- Max Ledger Version Value -->
+          <div class="form-row" title="Optional The highest ledger version that the transaction can be included in. If this option and maxLedgerVersionOffset are both omitted, the maxLedgerVersion option will default to 3 greater than the current validated ledger version (equivalent to maxLedgerVersionOffset=3). Use null to not set a maximum ledger version.">
+              <label for="instructions-maxLedgerVersion"><i class="fa fa-tag"></i> Max Ledger Version</label>
+              <input type="text" id="instructions-maxLedgerVersion" />
+          </div>
+
+          <!-- Max Ledger Version Offset Value -->
+          <div class="form-row" title="Optional Offset from current validated ledger version to highest ledger version that the transaction can be included in.">
+              <label for="instructions-maxLedgerVersionOffset"><i class="fa fa-tag"></i> Max Ledger Version Offset</label>
+              <input type="text" id="instructions-maxLedgerVersionOffset" />
+          </div>
+
+          <!-- Sequence Value -->
+          <div class="form-row" title="Optional The initiating account's sequence number for this transaction.">
+              <label for="instructions-sequence"><i class="fa fa-tag"></i> Sequence</label>
+              <input type="text" id="instructions-sequence" />
+          </div>
+
+          <!-- Signers Count Value -->
+          <div class="form-row" title="Optional Number of signers that will be signing this transaction.">
+              <label for="instructions-signersCount"><i class="fa fa-tag"></i> Signers Count</label>
+              <input type="text" id="instructions-signersCount" />
+          </div>
+      </div>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="prepare-trustline">
+  <p>Prepare a trustline transaction. The prepared transaction must subsequently be signed and submitted.</p>
+  <h3>Inputs</h3>
+  <p>
+      Set via <b>msg.payload</b>, or set within the node interface.
+  </p>
+  <dl class="message-properties">
+      <dt class="optional">Name
+          <span class="property-type">String</span>
+      </dt>
+      <dd> Custom name to apply to this node</dd>
+
+      <dt class="optional">Server
+          <span class="property-type">Node</span>
+      </dt>
+      <dd> Which rippled server to connect to? Leaving blank defaults to offline mode</dd>
+
+      <dt>payload.address<span class='property-type'>address</span>
+      </dt>
+      <dd> The address of the account that is creating the transaction.</dd>
+
+      <dt>payload.trustline.currency<span class='property-type'>currency</span>
+      </dt>
+      <dd> The currency this trustline applies to.</dd>
+
+      <dt>payload.trustline.counterparty<span class='property-type'>address</span>
+      </dt>
+      <dd> The address of the account this trustline extends trust to.</dd>
+
+      <dt>payload.trustline.limit<span class='property-type'>value</span>
+      </dt>
+      <dd> The maximum amount that the owner of the trustline can be owed through the trustline.</dd>
+
+      <dt class='optional'>payload.trustline.authorized<span class='property-type'>boolean</span>
+      </dt>
+      <dd> Optional If true, authorize the counterparty to hold issuances from this account.</dd>
+
+      <dt class='optional'>payload.trustline.frozen<span class='property-type'>boolean</span>
+      </dt>
+      <dd> Optional If true, the trustline is frozen, which means that funds can only be sent to the owner.</dd>
+
+      <dt class='optional'>payload.trustline.qualityIn<span class='property-type'>number</span>
+      </dt>
+      <dd> Optional Incoming balances on this trustline are valued at this ratio.</dd>
+
+      <dt class='optional'>payload.trustline.qualityOut<span class='property-type'>number</span>
+      </dt>
+      <dd> Optional Outgoing balances on this trustline are valued at this ratio.</dd>
+
+      <dt class='optional'>payload.trustline.ripplingDisabled<span class='property-type'>boolean</span>
+      </dt>
+      <dd> Optional If true, payments cannot ripple through this trustline.</dd>
+
+      
+      <dt class='optional'>payload.trustline.memos<span class='property-type'>memos</span>
+      </dt>
+      <dd> Optional Array of memos to attach to the transaction.</dd>
+
+      <dt class='optional'>payload.trustline.memos.data<span class='property-type'>string</span>
+      </dt>
+      <dd> Optional Arbitrary string, conventionally containing the content of the memo.</dd>
+
+      <dt class='optional'>payload.trustline.memos.format<span class='property-type'>string</span>
+      </dt>
+      <dd> Optional Conventionally containing information on how the memo is encoded, for example as a MIME type . Only characters allowed in URLs are permitted.</dd>
+
+      <dt class='optional'>payload.trustline.memos.type<span class='property-type'>string</span>
+      </dt>
+      <dd> Optional Conventionally, a unique relation (according to RFC 5988 ) that defines the format of this memo. Only characters allowed in URLs are permitted.</dd>
+
+      <dt class='optional'>payload.trustline.noDirectRipple<span class='property-type'>boolean</span>
+      </dt>
+      <dd> Optional If true and paths are specified, the sender would like the XRP Ledger to disregard any direct paths from the source account to the destination account. This may be used to take advantage of an arbitrage opportunity or by gateways wishing to issue balances from a hot wallet to a user who has mistakenly set a trustline directly to the hot wallet.</dd>
+      
+      <dt class='optional'>payload.trustline.paths<span class='property-type'>string</span>
+      </dt>
+      <dd> Optional The paths of trustlines and orders to use in executing the trustline.</dd>
+
+      <dt class='optional'>payload.instructions<span class='property-type'>instructions</span>
+      </dt>
+      <dd> Optional Instructions for executing the transaction</dd>
+
+      <dt class='optional'>payload.instructions.fee<span class='property-type'>value</span>
+      </dt>
+      <dd> Optional An exact fee to pay for the transaction, before multiplying for multi-signed transactions. See Transaction Fees for more information.</dd>
+
+      <dt class='optional'>payload.instructions.maxLedgerVersion<span class='property-type'>integer,null</span>
+      </dt>
+      <dd> Optional The highest ledger version that the transaction can be included in. If this option and maxLedgerVersionOffset are both omitted, the maxLedgerVersion option will default to 3 greater than the current validated ledger version (equivalent to maxLedgerVersionOffset=3). Use null to not set a maximum ledger version. If not null, this must be an integer greater than 0, or one of the following strings: 'validated', 'closed', 'current'.</dd>
+      
+      <dt class='optional'>payload.instructions.maxLedgerVersionOffset<span class='property-type'>integer</span>
+      </dt>
+      <dd> Optional Offset from current validated ledger version to highest ledger version that the transaction can be included in.</dd>
+      
+      <dt class='optional'>payload.instructions.sequence<span class='property-type'>sequence</span>
+      </dt>
+      <dd> Optional The initiating account's sequence number for this transaction.</dd>
+      
+      <dt class='optional'>payload.instructions.signersCount<span class='property-type'>integer</span>
+      </dt>
+      <dd> Optional Number of signers that will be signing this transaction.</dd>
+  </dl>
+
+  <h3>Output</h3>
+  <dl class="message-properties">
+      <dt>payload.txJSON<span class='property-type'>string</span>
+      </dt>
+      <dd> The prepared transaction in rippled JSON format.</dd>
+
+      <dt>payload.instructions<span class='property-type'>object</span>
+      </dt>
+      <dd> The instructions for how to execute the transaction after adding automatic defaults.</dd>
+
+      <dt>payload.instructions. fee<span class='property-type'>value</span>
+      </dt>
+      <dd> The fee to pay for the transaction. See Transaction Fees for more information. For multi-signed transactions, this fee will be multiplied by (N+1), where N is the number of signatures you plan to provide.</dd>
+      
+      <dt>payload.instructions. sequence<span class='property-type'>sequence</span>
+      </dt>
+      <dd> The initiating account's sequence number for this transaction.</dd>
+      
+      <dt>payload.instructions. maxLedgerVersion<span class='property-type'>integer,null</span>
+      </dt>
+      <dd> The highest ledger version that the transaction can be included in. Set to null if there is no maximum. If not null, this must be an integer greater than 0, or one of the following strings: 'validated', 'closed', 'current'.</dd>
+      
+      <dt>payload.instructions. maxLedgerVersion<span class='property-type'>string,null</span>
+      </dt>
+      <dd> The highest ledger version that the transaction can be included in. Set to null if there is no maximum. If not null, this must be an integer greater than 0, or one of the following strings: 'validated', 'closed', 'current'.</dd>
+  </dl>
+  <h3>Reference</h3>
+  <ul>
+      <li><a href='https://xrpl.org/rippleapi-reference.html#preparetrustline'>See XRPL Docs</a></li>
+  </ul>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<script type="text/javascript">
+  RED.nodes.registerType('prepare-trustline',{
+    category: 'XRPL Advanced',      // the palette category
+    color: "#e2d96e",
+    defaults: {             // defines the editable properties of the node
+        name: {value:""},
+        server: {value:"", type:"get-server", required: false},
+        address: {value:""},
+        trustline: {value: {}},
+        instructions: {value: {}},
+    },
+    inputs:1,               // set the number of inputs - only 0 or 1
+    outputs:1,              // set the number of outputs - 0 to n
+    // set the icon (held in icons dir below where you save the node)
+    icon: "create.png",     // saved in  icons/myicon.png
+    label: function() {     // sets the default label contents
+        return this.name||"Prepare Trustline";
+    },
+    labelStyle: function() { // sets the class to apply to the label
+        return this.name?"node_label_italic":"";
+    },
+    oneditprepare: function() {
+      let node = this;
+      const $accordionMemo = $("#add-memo-container");
+      const $accordionInstructions = $("#add-instruction-container");
+
+      const $memos = {
+        list: $("#memo-list"),
+        addBtn: $("#memo-add-btn"),
+
+        data: $("#memo-data-value"),
+        format: $("#memo-format-value"),
+        type: $("#memo-type-value")
+      };
+
+      // **************************
+      // * Add Memos
+      // **************************
+      const memosHandler = {
+        onAddMemoButton: function(e) {
+          const memo = {
+            data: $memos.data.val(),
+            format: $memos.format.val(),
+            type: $memos.type.val()
+          };
+
+          $memos.list.editableList("addItem", memo);
+          $memos.data.val("");
+          $memos.format.val("");
+          $memos.type.val("");
+        },
+        onEditableListAdd: function(row, index, value) {
+          const $row = $(row);
+          const {
+            type,
+            format,
+            data
+          } = value;
+
+          const rowHtml = `
+          <b>Format:</b>&nbsp;${format}<br>
+          <b>Type:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${type}<br>
+          <b>Data:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${data}`;
+          $row.html(rowHtml);
+        }
+      };
+
+      $memos.addBtn.on("click", memosHandler.onAddMemoButton);
+
+      // Memos List
+      $memos.list.editableList({
+        addButton: false,
+        height: 100,
+        sortable: true,
+        removable: true,
+        addItem: memosHandler.onEditableListAdd
+      });
+
+      // **************************
+      // * General Init
+      // **************************
+      $accordionMemo.accordion({
+        active: true,
+        collapsible: true,
+        heightStyle: "content"
+      });
+      $accordionInstructions.accordion({
+        active: true,
+        collapsible: true,
+        heightStyle: "content"
+      });
+
+      // Add previous memos to editable lists
+      node.trustline.memos.forEach(c =>
+        $memos.list.editableList("addItem", c)
+      );
+
+      $('#currency').val(node.trustline.currency);
+      $('#counterparty').val(node.trustline.counterparty);
+      $('#limit').val(node.trustline.limit);
+      $('#authorized').val(node.trustline.authorized);
+      $('#frozen').val(node.trustline.frozen);
+      $('#qualityIn').val(node.trustline.qualityIn);
+      $('#qualityOut').val(node.trustline.qualityOut);
+
+      $("#instructions-fee").val(node.instructions.fee);
+      $("#instructions-maxFee").val(node.instructions.maxFee);
+      $("#instructions-maxLedgerVersion").val(node.instructions.maxLedgerVersion);
+      $("#instructions-maxLedgerVersion").val(node.instructions.maxLedgerVersion);
+      $("#instructions-maxLedgerVersionOffset").val(node.instructions.maxLedgerVersionOffset);
+      $("#instructions-sequence").val(node.instructions.sequence);
+      $("#instructions-signersCount").val(node.instructions.signersCount);
+
+    },
+    oneditsave: function() {
+      const $memosList = $("#memo-list");
+
+      // Compile Memos
+      const nodeMemos = [];
+      const listMemos = $memosList.editableList("items");
+      listMemos.each(function(i) {
+        nodeMemos.push($(this).data("data"));
+      });
+
+      this.trustline.memos = nodeMemos;
+
+      this.trustline.currency = $('#currency').val();
+      this.trustline.counterparty = $('#counterparty').val();
+      this.trustline.limit = $('#limit').val();
+      this.trustline.authorized = $('#authorized').val();
+      this.trustline.frozen = $('#frozen').val();
+      this.trustline.qualityIn = $('#qualityIn').val();
+      this.trustline.qualityOut = $('#qualityOut').val();
+
+      this.instructions.fee = $("#instructions-fee").val();
+      this.instructions.maxFee = $("#instructions-maxFee").val();
+      this.instructions.maxLedgerVersion = $("#instructions-maxLedgerVersion").val();
+      this.instructions.maxLedgerVersion = $("#instructions-maxLedgerVersion").val();
+      this.instructions.maxLedgerVersionOffset = $("#instructions-maxLedgerVersionOffset").val();
+      this.instructions.sequence = $("#instructions-sequence").val();
+      this.instructions.signersCount = $("#instructions-signersCount").val();
+    }
+
+  });
+</script>

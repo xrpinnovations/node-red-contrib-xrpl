@@ -4,43 +4,42 @@
         <input type="text" id="node-input-name" placeholder="Node Name">
     </div>
     <div class="form-row">
-        <label for="node-input-address"><i class="fa fa-tag"></i> Address</label>
-        <input type="text" id="node-input-address" placeholder="XRP Address">
+        <label for="node-input-data"><i class="fa fa-tag"></i> Data</label>
+        <input type="text" id="node-input-data" placeholder="Input Data">
     </div>
 </div>
 </script>
 
 <script type="text/x-red" data-help-name="generate-qrcode">
-  <!-- data-help-name identifies the node type this help is for             -->
-  <!-- This content appears in the Info sidebar when a node is selected     -->
-  <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
-  <!-- node in the palette.                                                 -->
+
   <p>This node generates a QR code (Base64 image) when an input is received.</p>
   <h3>Input</h3>
    <p>
      Input can either be received as a string via <b>msg.payload</b>, or set within the node interface.
    </p>
-   <ul>
-     <li> <b>Address / msg.payload</b> : [String] To encode as a QR base64 image type.</li>
-   </ul>
+   <dl class="message-properties">
+        <dt>Data / msg.payload.data
+            <span class="property-type">String</span>
+        </dt>
+        <dd> To encode as a QR base64 image type.</dd>
+    </dl>
   <h3>Output</h3>
    <p><b>msg</b>. An object containing either of the following:</p>
-   <ul>
-     <li> <b>msg.payload</b>. [String] Base64 image.</li>
-     <li> <b>msg.error</b>. [String] Contains any error messages. </li>
-   </ul>
-
+   <dl class="message-properties">
+        <dt>msg.payload
+            <span class="property-type">String</span>
+        </dt>
+        <dd> Base64 image.</dd>
+    </dl>
 </script>
 
-<!-- Finally, the node type is registered along with all of its properties   -->
-<!-- The example below shows a small subset of the properties that can be set-->
 <script type="text/javascript">
     RED.nodes.registerType('generate-qrcode',{
         category: 'XRPL',      // the palette category
         color: '#d8bfd8',
         defaults: {             // defines the editable properties of the node
             name: {value:""},
-            address: {value:""}
+            data: {value:""}
         },
         inputs:1,               // set the number of inputs - only 0 or 1
         outputs:1,              // set the number of outputs - 0 to n

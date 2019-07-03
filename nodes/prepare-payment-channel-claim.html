@@ -1,0 +1,275 @@
+<script type="text/x-red" data-template-name="prepare-payment-channel-claim">
+    <div class="form-row" title="Custom name to apply to this node">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
+      <input type="text" id="node-input-name" placeholder="Node Name">
+  </div>
+
+  <div class="form-row">
+      <h3>Transaction</h3>
+  </div>
+  <div class="form-row" title="Which rippled server to connect to? Leaving blank defaults to offline mode">
+      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+      <input type="text" id="node-input-server">
+  </div>
+
+  <div class='form-row' title='The address of the account that is creating the transaction.'>
+      <label for='node-input-address'><i class='fa fa-tag'></i> Address</label>
+      <input type='text' id='node-input-address' placeholder=''>
+  </div>
+
+  <!-- -------------------------------------------------------------- -->
+  <!-- Add Prepare Payment Channel Claim                              -->
+  <!-- -------------------------------------------------------------- -->
+<div class="form-row">
+    <h4>Payment Channel Claim</h4>
+</div>
+  <div class='form-row' title='256-bit hexadecimal channel identifier.'>
+      <label for='channel'><i class='fa fa-tag'></i> Channel</label>
+      <input type='text' id='channel' placeholder=''>
+  </div>
+  <div class='form-row' title='Optional Amount of XRP authorized by this signature.'>
+      <label for='amount'><i class='fa fa-tag'></i> Amount</label>
+      <input type='text' id='amount' placeholder=''>
+  </div>
+  <div class='form-row' title='Optional Total XRP balance delivered by this channel after claim is processed.'>
+      <label for='balance'><i class='fa fa-tag'></i> Balance</label>
+      <input type='text' id='balance' placeholder=''>
+  </div>
+  <div class='form-row' title='Optional Request to close the channel. If the channel has no XRP remaining or the destination address requests it, closes the channel immediately (returning unclaimed XRP to the source address). Otherwise, sets the channel to expire after settleDelay seconds have passed.'>
+      <label for='close' ><i class='fa fa-tag'></i> Close</label>
+      <select id="close">
+        <option value='false'>False</option>
+        <option value='true'>True</option>
+      </select>
+  </div>
+  <div class='form-row' title='Optional Public key of the channel. (For verifying the signature.)'>
+      <label for='publicKey'><i class='fa fa-tag'></i> Publickey</label>
+      <input type='text' id='publicKey' placeholder=''>
+  </div>
+  <div class='form-row' title='Optional Clear the channels expiration time.'>
+      <label for='renew'><i class='fa fa-tag'></i> Renew</label>
+      <select id="renew">
+        <option value='false'>False</option>
+        <option value='true'>True</option>
+      </select>
+  </div>
+  <div class='form-row' title='Optional Signed claim authorizing withdrawal of XRP from the channel. (Required except from the channels source address.)'>
+      <label for='signature'><i class='fa fa-tag'></i> Signature</label>
+      <input type='text' id='signature' placeholder=''>
+  </div>
+
+  <!-- -------------------------------------------------------------- -->
+  <!-- Add Instructions                                               -->
+  <!-- -------------------------------------------------------------- -->
+  <div class="form-row" id="add-instruction-container">
+      <h4>Add An Instruction</h4>
+      <div>
+          <!-- Fee Value -->
+          <div class="form-row" title="Optional An exact fee to pay for the transaction. See Transaction Fees for more information.">
+              <label for="instructions-fee"><i class="fa fa-tag"></i> Fee (Drops)</label>
+              <input type="text" id="instructions-fee" />
+          </div>
+
+          <!-- Max Ledger Version Value -->
+          <div class="form-row" title="Optional The highest ledger version that the transaction can be included in. If this option and maxLedgerVersionOffset are both omitted, the maxLedgerVersion option will default to 3 greater than the current validated ledger version (equivalent to maxLedgerVersionOffset=3). Use null to not set a maximum ledger version.">
+              <label for="instructions-maxLedgerVersion"><i class="fa fa-tag"></i> Max Ledger Version</label>
+              <input type="text" id="instructions-maxLedgerVersion" />
+          </div>
+
+          <!-- Max Ledger Version Offset Value -->
+          <div class="form-row" title="Optional Offset from current validated ledger version to highest ledger version that the transaction can be included in.">
+              <label for="instructions-maxLedgerVersionOffset"><i class="fa fa-tag"></i> Max Ledger Version Offset</label>
+              <input type="text" id="instructions-maxLedgerVersionOffset" />
+          </div>
+
+          <!-- Sequence Value -->
+          <div class="form-row" title="Optional The initiating account's sequence number for this transaction.">
+              <label for="instructions-sequence"><i class="fa fa-tag"></i> Sequence</label>
+              <input type="text" id="instructions-sequence" />
+          </div>
+
+          <!-- Signers Count Value -->
+          <div class="form-row" title="Optional Number of signers that will be signing this transaction.">
+              <label for="instructions-signersCount"><i class="fa fa-tag"></i> Signers Count</label>
+              <input type="text" id="instructions-signersCount" />
+          </div>
+      </div>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="prepare-payment-channel-claim">
+    <p>Prepare a payment channel claim transaction. The prepared transaction must subsequently be signed and submitted.</p>
+    <h3>Inputs</h3>
+    <p>
+        Set via <b>msg.payload</b>, or set within the node interface.
+    </p>
+    <dl class="message-properties">
+        <dt class="optional">Name
+            <span class="property-type">String</span>
+        </dt>
+        <dd> Custom name to apply to this node</dd>
+
+        <dt class="optional">Server
+            <span class="property-type">Node</span>
+        </dt>
+        <dd> Which rippled server to connect to? Leaving blank defaults to offline mode</dd>
+
+        <dt>payload.address<span class='property-type'>address</span>
+        </dt>
+        <dd> The address of the account that is creating the transaction.</dd>
+
+        <dt>payload.paymentChannelClaim.channel<span class='property-type'>string</span>
+        </dt>
+        <dd> 256-bit hexadecimal channel identifier.</dd>
+        <dt class='optional'>payload.paymentChannelClaim.amount<span class='property-type'>value</span>
+        </dt>
+        <dd> Optional Amount of XRP authorized by this signature.</dd>
+        <dt class='optional'>payload.paymentChannelClaim.balance<span class='property-type'>value</span>
+        </dt>
+        <dd> Optional Total XRP balance delivered by this channel after claim is processed.</dd>
+        <dt class='optional'>payload.paymentChannelClaim.close<span class='property-type'>boolean</span>
+        </dt>
+        <dd> Optional Request to close the channel. If the channel has no XRP remaining or the destination address requests it, closes the channel immediately (returning unclaimed XRP to the source address). Otherwise, sets the channel to expire after settleDelay seconds have passed.</dd>
+        <dt class='optional'>payload.paymentChannelClaim.publicKey<span class='property-type'>string</span>
+        </dt>
+        <dd> Optional Public key of the channel. (For verifying the signature.)</dd>
+        <dt class='optional'>payload.paymentChannelClaim.renew<span class='property-type'>boolean</span>
+        </dt>
+        <dd> Optional Clear the channel's expiration time.</dd>
+        <dt class='optional'>payload.paymentChannelClaim.signature<span class='property-type'>string</span>
+        </dt>
+        <dd> Optional Signed claim authorizing withdrawal of XRP from the channel. (Required except from the channel's source address.)</dd>
+
+        <dt class='optional'>payload.instructions<span class='property-type'>instructions</span>
+        </dt>
+        <dd> Optional Instructions for executing the transaction</dd>
+        <dt class='optional'>payload.instructions.fee<span class='property-type'>value</span>
+        </dt>
+        <dd> Optional An exact fee to pay for the transaction, before multiplying for multi-signed transactions. See Transaction Fees for more information.</dd>
+        <dt class='optional'>payload.instructions.maxLedgerVersion<span class='property-type'>integer,null</span>
+        </dt>
+        <dd> Optional The highest ledger version that the transaction can be included in. If this option and maxLedgerVersionOffset are both omitted, the maxLedgerVersion option will default to 3 greater than the current validated ledger version (equivalent to maxLedgerVersionOffset=3). Use null to not set a maximum ledger version. If not null, this must be an integer greater than 0, or one of the following strings: 'validated', 'closed', 'current'.</dd>
+        <dt class='optional'>payload.instructions.maxLedgerVersionOffset<span class='property-type'>integer</span>
+        </dt>
+        <dd> Optional Offset from current validated ledger version to highest ledger version that the transaction can be included in.</dd>
+        <dt class='optional'>payload.instructions.sequence<span class='property-type'>sequence</span>
+        </dt>
+        <dd> Optional The initiating account's sequence number for this transaction.</dd>
+        <dt class='optional'>payload.instructions.signersCount<span class='property-type'>integer</span>
+        </dt>
+        <dd> Optional Number of signers that will be signing this transaction.</dd>
+    </dl>
+
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt>payload.txJSON<span class='property-type'>string</span>
+        </dt>
+        <dd> The prepared transaction in rippled JSON format.</dd>
+        <dt>payload.instructions<span class='property-type'>object</span>
+        </dt>
+        <dd> The instructions for how to execute the transaction after adding automatic defaults.</dd>
+        <dt>payload.instructions. fee<span class='property-type'>value</span>
+        </dt>
+        <dd> The fee to pay for the transaction. See Transaction Fees for more information. For multi-signed transactions, this fee will be multiplied by (N+1), where N is the number of signatures you plan to provide.</dd>
+        <dt>payload.instructions. sequence<span class='property-type'>sequence</span>
+        </dt>
+        <dd> The initiating account's sequence number for this transaction.</dd>
+        <dt>payload.instructions. maxLedgerVersion<span class='property-type'>integer,null</span>
+        </dt>
+        <dd> The highest ledger version that the transaction can be included in. Set to null if there is no maximum. If not null, this must be an integer greater than 0, or one of the following strings: 'validated', 'closed', 'current'.</dd>
+        <dt>payload.instructions. maxLedgerVersion<span class='property-type'>string,null</span>
+        </dt>
+        <dd> The highest ledger version that the transaction can be included in. Set to null if there is no maximum. If not null, this must be an integer greater than 0, or one of the following strings: 'validated', 'closed', 'current'.</dd>
+    </dl>
+    <h3>Reference</h3>
+    <ul>
+        <li><a href='https://xrpl.org/rippleapi-reference.html#preparepaymentchannelclaim'>See XRPL Docs</a></li>
+    </ul>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<script type="text/javascript">
+    RED.nodes.registerType('prepare-payment-channel-claim', {
+        category: 'XRPL Payment Channel', // the palette category
+        color: "#e2d96e",
+        defaults: { // defines the editable properties of the node
+            name: {
+                value: ""
+            },
+            server: {
+                value: "",
+                type: "get-server",
+                required: false
+            },
+            address: {
+                value: ""
+            },
+            paymentChannelClaim: {
+                value: {}
+            },
+            instructions: {
+                value: {}
+            },
+        },
+        inputs: 1, // set the number of inputs - only 0 or 1
+        outputs: 1, // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "create.png", // saved in  icons/myicon.png
+        label: function() { // sets the default label contents
+            return this.name || "Prepare Payment Channel Claim";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+            let node = this;
+
+            const $accordionInstructions = $("#add-instruction-container");
+
+            // **************************
+            // * General Init
+            // **************************
+            $accordionInstructions.accordion({
+                active: true,
+                collapsible: true,
+                heightStyle: "content"
+            });
+
+            $('#channel').val(node.paymentChannelClaim.channel);
+            $('#amount').val(node.paymentChannelClaim.amount);
+            $('#balance').val(node.paymentChannelClaim.balance);
+            $('#close').val(node.paymentChannelClaim.close);
+            $('#publicKey').val(node.paymentChannelClaim.publicKey);
+            $('#renew').val(node.paymentChannelClaim.renew);
+            $('#signature').val(node.paymentChannelClaim.signature);
+
+            $("#instructions-fee").val(node.instructions.fee);
+            $("#instructions-maxFee").val(node.instructions.maxFee);
+            $("#instructions-maxLedgerVersion").val(node.instructions.maxLedgerVersion);
+            $("#instructions-maxLedgerVersion").val(node.instructions.maxLedgerVersion);
+            $("#instructions-maxLedgerVersionOffset").val(node.instructions.maxLedgerVersionOffset);
+            $("#instructions-sequence").val(node.instructions.sequence);
+            $("#instructions-signersCount").val(node.instructions.signersCount);
+
+        },
+        oneditsave: function() {
+
+            this.paymentChannelClaim.channel = $('#channel').val();
+            this.paymentChannelClaim.amount = $('#amount').val();
+            this.paymentChannelClaim.balance = $('#balance').val();
+            this.paymentChannelClaim.close = $('#close').val();
+            this.paymentChannelClaim.publicKey = $('#publicKey').val();
+            this.paymentChannelClaim.renew = $('#renew').val();
+            this.paymentChannelClaim.signature = $('#signature').val();
+
+            this.instructions.fee = $("#instructions-fee").val();
+            this.instructions.maxFee = $("#instructions-maxFee").val();
+            this.instructions.maxLedgerVersion = $("#instructions-maxLedgerVersion").val();
+            this.instructions.maxLedgerVersion = $("#instructions-maxLedgerVersion").val();
+            this.instructions.maxLedgerVersionOffset = $("#instructions-maxLedgerVersionOffset").val();
+            this.instructions.sequence = $("#instructions-sequence").val();
+            this.instructions.signersCount = $("#instructions-signersCount").val();
+        }
+
+    });
+</script>

@@ -1,0 +1,145 @@
+<script type="text/x-red" data-template-name="get-information">
+ <div class="form-row">
+      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+      <input type="text" id="node-input-server">
+  </div>
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
+      <input type="text" id="node-input-name" placeholder="Node Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-selectionType"><i class="fa fa-tag"></i> Type</label>
+      <select id="node-input-selectionType">
+          <option value='account'>Account</option>
+          <option value='ledger'>Ledger</option>
+      </select>
+  </div>
+  <div class="form-row">
+      <label for="node-input-selection"><i class="fa fa-tag"></i> Selection</label>
+      <select id="node-input-selection">
+      </select>
+  </div>
+
+  <div id='options' class="form-row">
+  </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="get-information">
+  <p>This node queries the XRP ledger for the summary information of an XRP account</p>
+
+  <h3>Input</h3>
+  <p>
+     Input can either be recieved as an object via <b>msg.payload</b>, or set within the node interface.
+   </p>
+  <dl class="message-properties">
+        <dt class="optional">Address / msg.payload.address
+            <span class="property-type">String</span>
+        </dt>
+        <dd> XRP address that will be used to retrieve account information.</dd>
+    </dl>
+  <h3>Output</h3>
+   <p><b>msg</b>. An object containing either of the following:</p>
+   <dl class="message-properties">
+   <dt class="optional">msg.payload
+            <span class="property-type">Object</span>
+        </dt>
+        <dd> Containing the XRP account information</dd>
+    </dl>
+   <a href='https://xrpl.org/rippleapi-reference.html#getaccountinfo'>See XRPL Docs</a>
+</script>
+
+<script type="text/javascript">
+
+    const types = {
+        account:{
+            accountInfo:{desc:'Information',children:[{name:'address',desc:'Address',type:'text'}]},
+            transactions:{desc:'Transactions',children:[{name:'address',desc:'Address',type:'text'}]},
+            accountObjects:{desc:'Objects',children:[{name:'address',desc:'Address',type:'text'}]},
+            balances:{desc:'Balances',children:[{name:'address',desc:'Address',type:'text'}]},
+            balanceSheet:{desc:'Balance Sheet',children:[{name:'address',desc:'Address',type:'text'}]},
+            orders:{desc:'Orders',children:[{name:'address',desc:'Address',type:'text'}]},
+            // orderBook:{desc:'Order Book',children:{{name:'address',desc:'Address',type:'text'}}}, // TODO: orderBook
+            settings:{desc:'Settings',children:[{name:'address',desc:'Address',type:'text'}]},
+            trustlines:{desc:'Trustlines',children:[{name:'address',desc:'Address',type:'text'}]},
+            parseAccountFlags:{desc:'Parse Account Flags',children:[{name:'number',desc:'Flags',type:'text'}]}
+        },
+        ledger:{
+            serverInfo:{desc:'Server Info'},  
+            fee:{desc:'Current Fee'}, 
+            ledgerVersion:{desc:'Ledger Version'}, 
+            ledger:{desc:'Ledger Info'}, // TODO: getLedger - options 
+            // paths:{desc:'Routing Paths', // TODO: getPaths - pathObject
+            transaction:{desc:'Transaction Detail',children:[{name:'uid',desc:'ID',type:'text'}]}, // TODO: getTransaction - options
+            paymentChannel:{desc:'Payment Channel',children:[{name:'uid',desc:'ID',type:'text'}]} 
+        }
+    }
+
+    RED.nodes.registerType('get-information',{
+        category: 'XRPL',      // the palette category
+        color: '#c7e9c0',
+        defaults: {             // defines the editable properties of the node
+            name: {value:""},   //  along with default values.
+            address: {value:""},
+            server: {value:"", type:"get-server", required: false},
+            selectionType: {value:'account'},
+            selection: {value:'information'},
+            options: {value:{}},
+            orderBook: {value: {}},
+            uid: {value:"82AB3D1F1E1CB300395EF5145D485F1F2DD5E5969B1A2A88A4AB969A6584A3F6"},
+            pathfind: {value: {}},
+            number: {value:'0'}
+        },
+        inputs:1,               // set the number of inputs - only 0 or 1
+        outputs:1,              // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "account.png",     // saved in  icons/myicon.png
+        label: function() {     // sets the default label contents
+            return this.name|| `Get: ${this.selection}`;
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            var node = this;
+            var previousSelection = node.selection;
+            var previousOptions = node.options;
+            $( '#node-input-selectionType' ).change(function() {
+                $("#node-input-selection").empty();
+                Object.entries(types).forEach(entry => {
+                    let key = entry[0];
+                    let value = entry[1];
+                    if ($( '#node-input-selectionType' ).val() == key){
+                        Object.entries(value).forEach(childEntry => {
+                            var o = new Option(childEntry[1].desc, childEntry[0]);
+                            $(o).html(childEntry[1].desc);
+                            $("#node-input-selection").append(o);
+                        });
+                        $( '#node-input-selection' ).val(previousSelection);
+                    }
+                });
+            });
+
+            $( '#node-input-selection' ).change(function() {
+                $('#options').empty();
+                Object.entries(types).forEach(entry => {
+                    let key = entry[0];
+                    let value = entry[1];
+                    if ($( '#node-input-selectionType' ).val() == key){
+                        Object.entries(value).forEach(childEntry => { 
+                            let childKey = childEntry[0];
+                            let childValue = childEntry[1];
+                            if ($( '#node-input-selection' ).val() == childKey && childValue.children){
+                                for (const childEntity of childValue.children) {
+                                    var value = node[childEntity.name] ? node[childEntity.name] : '';
+                                    $('#options').append('<div class="form-row"><label for="node-input-'+childEntity.name+'"><i class="fa fa-tag"></i> '+childEntity.desc+'</label><input type="'+childEntity.type+'" id="node-input-'+childEntity.name+'" value='+value+'></div>');
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+            $( '#node-input-selectionType' ).val(node.selectionType);
+         }
+      });
+</script>

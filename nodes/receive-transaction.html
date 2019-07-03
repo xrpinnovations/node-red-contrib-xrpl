@@ -7,14 +7,49 @@
       <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
       <input type="text" id="node-input-name" placeholder="Node Name">
   </div>
-  <div class="form-row">
-      <label for="node-input-address"><i class="fa fa-tag"></i> Monitored Address</label>
-      <input type="text" id="node-input-address" placeholder="Monitored Address">
-  </div>
+
+    <!-- -------------------------------------------------------------- -->
+    <!-- Add Addresses                                                  -->
+    <!-- -------------------------------------------------------------- -->
+    <div class="form-row" id="add-address-container">
+        <h5>Monitor XRP Address Transactions</h5>
+        <div>
+            <!-- Add Address Button -->
+            <div class="form-row">
+                <label for="address-value"><i class="fa fa-tag"></i> XRP Address</label>
+                <input type="text" id="address-value">
+            </div>
+
+            <!-- Add Address Button -->
+            <div class="form-row">
+                <button id="address-add-btn" style="width: 100%">Add Address</button>
+            </div>
+
+            <!-- Address List -->
+            <div class="form-row">
+                <ol id="address-list"></ol>
+            </div>
+        </div>
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="receive-transaction">
-  <p>TODO</p>
+    <p>Monitor and receive account transactions.</p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">Monitored Addresses
+            <span class="property-type">Array</span>
+        </dt>
+        <dd> Addresses to monitor for transactions</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">msg.payload
+            <span class="property-type">object</span>
+        </dt>
+        <dd> The received transaction of the monitored account</dd>
+    </dl>
+  <a href='https://xrpl.org/subscribe.html'>See XRPL Docs</a>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
@@ -26,7 +61,7 @@
         defaults: {             // defines the editable properties of the node
             name: {value:""},   //  along with default values.
             server: {value:"", type:"get-server"},
-            address: {value:""}
+            monitor: {value:[]}
         },
         inputs:0,               // set the number of inputs - only 0 or 1
         outputs:1,              // set the number of outputs - 0 to n
@@ -37,6 +72,63 @@
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+        let node = this;
+
+        const $addresses = {
+            list: $("#address-list"),
+            addBtn: $("#address-add-btn"),
+
+            address: $("#address-value")
+        };
+
+        // **************************
+        // * Add Addresses
+        // **************************
+        const addressesHandler = {
+            onAddAddressButton: function(e) {
+            address = $addresses.address.val();
+
+            $addresses.list.editableList("addItem", address);
+            $addresses.address.val("");
+            },
+            onEditableListAdd: function(row, index, value) {
+            const $row = $(row);
+            const rowHtml = `<b>Address:</b>&nbsp;${value}`;
+            $row.html(rowHtml);
+            }
+        };
+
+        $addresses.addBtn.on("click", addressesHandler.onAddAddressButton);
+
+        // Addresses List
+        $addresses.list.editableList({
+            addButton: false,
+            height: 100,
+            sortable: true,
+            removable: true,
+            addItem: addressesHandler.onEditableListAdd
+        });
+
+
+        // Add previous adresses to editable lists
+        node.monitor.forEach(c =>
+            $addresses.list.editableList("addItem", c)
+        );
+        },
+        oneditsave: function() {
+        const $addressesList = $("#address-list");
+
+        // Compile Addresses
+        const nodeAddresses = [];
+        const listAddresses = $addressesList.editableList("items");
+        listAddresses.each(function(i) {
+            nodeAddresses.push($(this).data("data"));
+        });
+
+        this.monitor = nodeAddresses;
         }
+
     });
 </script>

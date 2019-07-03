@@ -1,0 +1,387 @@
+<script type="text/x-red" data-template-name="prepare-payment-channel-create">
+    <div class="form-row" title="Custom name to apply to this node">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
+        <input type="text" id="node-input-name" placeholder="Node Name">
+    </div>
+
+    <div class="form-row">
+        <h3>Transaction</h3>
+    </div>
+    <div class="form-row" title="Which rippled server to connect to? Leaving blank defaults to offline mode">
+        <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+
+    <div class='form-row' title='The address of the account that is creating the transaction.'>
+        <label for='node-input-address'><i class='fa fa-tag'></i> Address</label>
+        <input type='text' id='node-input-address' placeholder=''>
+    </div>
+
+    <div class='form-row' title='Optional Source tag'>
+        <label for='sourceTag'><i class='fa fa-tag'></i> Source Tag</label>
+        <input type='text' id='sourceTag' placeholder=''>
+    </div>
+
+    <!-- -------------------------------------------------------------- -->
+    <!-- Add Prepare Payment Channel Create                             -->
+    <!-- -------------------------------------------------------------- -->
+    <div class="form-row">
+        <h4>Payment Channel Create</h4>
+    </div>
+    <div class='form-row' title='Amount of XRP for sender to set aside in this channel.'>
+        <label for='amount'><i class='fa fa-tag'></i> Amount</label>
+        <input type='text' id='amount' placeholder=''>
+    </div>
+    <div class='form-row' title='Address to receive XRP claims against this channel.'>
+        <label for='destination'><i class='fa fa-tag'></i> Destination Address</label>
+        <input type='text' id='destination' placeholder=''>
+    </div>
+    <div class='form-row' title='Optional Destination tag.'>
+        <label for='destinationTag'><i class='fa fa-tag'></i> Destination Tag</label>
+        <input type='text' id='destinationTag' placeholder=''>
+    </div>
+    <div class='form-row' title='Amount of seconds the source address must wait before closing the channel if it has unclaimed XRP.'>
+        <label for='settleDelay'><i class='fa fa-tag'></i> Settle Delay</label>
+        <input type='text' id='settleDelay' placeholder=''>
+    </div>
+    <div class='form-row' title='Public key of the key pair the source may use to sign claims against this channel.'>
+        <label for='publicKey'><i class='fa fa-tag'></i> Public Key</label>
+        <input type='text' id='publicKey' placeholder=''>
+    </div>
+
+    <div class="form-row" id="add-cancelAfter-container"  title="Optional Time when this channel expires. This cancelAfter cannot be changed after creating the channel.">
+      <h4>Cancel After Time.. (UTC)</h4>
+      <div>
+        <div class="form-row" style="text-align: right;">
+          <label style="width: 30%;text-align: left;">Day</label>
+          <label style="width: 30%;text-align: left;">Month</label>
+          <label style="text-align: left;">Year</label>
+        </div>
+
+        <div class="form-row" style="text-align: right;">
+          <div style="width: 30%; display: inline-block;">
+            <input type="text" id="cancelAfter-day" style="width: 100%;" placeholder="0">
+          </div>
+          <div style="width: 30%; display: inline-block;">
+            <input type="text" id="cancelAfter-month" style="width: 100%;" placeholder="0">
+          </div>
+          <div style="width: 30%; display: inline-block;">
+            <input type="text" id="cancelAfter-year" style="width: 100%;" placeholder="0000">
+          </div>
+        </div>
+
+        <div class="form-row" style="text-align: right;">
+          <label style="width: 30%;text-align: left;">Hours (24hr)</label>
+          <label style="width: 30%;text-align: left;">Minutes</label>
+        </div>
+
+        <div class="form-row" style="text-align: right;">
+          <div style="width: 30%; display: inline-block;">
+            <input type="text" id="cancelAfter-hours" style="width: 100%;" value="00">
+          </div>
+          <div style="width: 30%; display: inline-block;">
+            <input type="text" id="cancelAfter-minutes" style="width: 100%;" value="00">
+          </div>
+        </div>
+
+        <div class="form-row" style="text-align: right;">
+          <label for="cancelAfter" style="text-align: left;"><i class="fa fa-tag"></i> Date</label>
+          <input type="text" id="cancelAfter" value="0000-00-00T00:00:00.000Z">
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- -------------------------------------------------------------- -->
+    <!-- Add Instructions                                               -->
+    <!-- -------------------------------------------------------------- -->
+    <div class="form-row" id="add-instruction-container">
+        <h4>Add An Instruction</h4>
+        <div>
+            <!-- Fee Value -->
+            <div class="form-row" title="Optional An exact fee to pay for the transaction. See Transaction Fees for more information.">
+                <label for="instructions-fee"><i class="fa fa-tag"></i> Fee (Drops)</label>
+                <input type="text" id="instructions-fee" />
+            </div>
+
+            <!-- Max Ledger Version Value -->
+            <div class="form-row" title="Optional The highest ledger version that the transaction can be included in. If this option and maxLedgerVersionOffset are both omitted, the maxLedgerVersion option will default to 3 greater than the current validated ledger version (equivalent to maxLedgerVersionOffset=3). Use null to not set a maximum ledger version.">
+                <label for="instructions-maxLedgerVersion"><i class="fa fa-tag"></i> Max Ledger Version</label>
+                <input type="text" id="instructions-maxLedgerVersion" />
+            </div>
+
+            <!-- Max Ledger Version Offset Value -->
+            <div class="form-row" title="Optional Offset from current validated ledger version to highest ledger version that the transaction can be included in.">
+                <label for="instructions-maxLedgerVersionOffset"><i class="fa fa-tag"></i> Max Ledger Version Offset</label>
+                <input type="text" id="instructions-maxLedgerVersionOffset" />
+            </div>
+
+            <!-- Sequence Value -->
+            <div class="form-row" title="Optional The initiating account's sequence number for this transaction.">
+                <label for="instructions-sequence"><i class="fa fa-tag"></i> Sequence</label>
+                <input type="text" id="instructions-sequence" />
+            </div>
+
+            <!-- Signers Count Value -->
+            <div class="form-row" title="Optional Number of signers that will be signing this transaction.">
+                <label for="instructions-signersCount"><i class="fa fa-tag"></i> Signers Count</label>
+                <input type="text" id="instructions-signersCount" />
+            </div>
+        </div>
+    </div>
+    </script>
+
+    <script type="text/x-red" data-help-name="prepare-payment-channel-create">
+        <p>Prepare a payment channel create transaction. The prepared transaction must subsequently be signed and submitted.</p>
+    <h3>Inputs</h3>
+    <p>
+        Set via <b>msg.payload</b>, or set within the node interface.
+    </p>
+    <dl class="message-properties">
+        <dt class="optional">Name
+            <span class="property-type">String</span>
+        </dt>
+        <dd> Custom name to apply to this node</dd>
+
+        <dt class="optional">Server
+            <span class="property-type">Node</span>
+        </dt>
+        <dd> Which rippled server to connect to? Leaving blank defaults to offline mode</dd>
+
+        <dt>payload.address<span class='property-type'>address</span>
+        </dt>
+        <dd> The address of the account that is creating the transaction.</dd>
+
+        <dt>payload.paymentChannelCreate.amount<span class='property-type'>value</span>
+        </dt>
+        <dd> Amount of XRP for sender to set aside in this channel.</dd>
+        <dt>payload.paymentChannelCreate.destination<span class='property-type'>address</span>
+        </dt>
+        <dd> Address to receive XRP claims against this channel.</dd>
+        <dt>payload.paymentChannelCreate.settleDelay<span class='property-type'>number</span>
+        </dt>
+        <dd> Amount of seconds the source address must wait before closing the channel if it has unclaimed XRP.</dd>
+        <dt>payload.paymentChannelCreate.publicKey<span class='property-type'>string</span>
+        </dt>
+        <dd> Public key of the key pair the source may use to sign claims against this channel.</dd>
+        <dt class='optional'>payload.paymentChannelCreate.cancelAfter<span class='property-type'>date-time string</span>
+        </dt>
+        <dd> Optional Time when this channel expires. This cancelAfter cannot be changed after creating the channel.</dd>
+        <dt class='optional'>payload.paymentChannelCreate.destinationTag<span class='property-type'>integer</span>
+        </dt>
+        <dd> Optional Destination tag.</dd>
+        <dt class='optional'>payload.paymentChannelCreate.sourceTag<span class='property-type'>integer</span>
+        </dt>
+        <dd> Optional Source tag</dd>
+
+        <dt class='optional'>payload.instructions<span class='property-type'>instructions</span>
+        </dt>
+        <dd> Optional Instructions for executing the transaction</dd>
+        <dt class='optional'>payload.instructions.fee<span class='property-type'>value</span>
+        </dt>
+        <dd> Optional An exact fee to pay for the transaction, before multiplying for multi-signed transactions. See Transaction Fees for more information.</dd>
+        <dt class='optional'>payload.instructions.maxLedgerVersion<span class='property-type'>integer,null</span>
+        </dt>
+        <dd> Optional The highest ledger version that the transaction can be included in. If this option and maxLedgerVersionOffset are both omitted, the maxLedgerVersion option will default to 3 greater than the current validated ledger version (equivalent to maxLedgerVersionOffset=3). Use null to not set a maximum ledger version. If not null, this must be an integer greater than 0, or one of the following strings:'validated','closed','current'.</dd>
+        <dt class='optional'>payload.instructions.maxLedgerVersionOffset<span class='property-type'>integer</span>
+        </dt>
+        <dd> Optional Offset from current validated ledger version to highest ledger version that the transaction can be included in.</dd>
+        <dt class='optional'>payload.instructions.sequence<span class='property-type'>sequence</span>
+        </dt>
+        <dd> Optional The initiating account's sequence number for this transaction.</dd>
+        <dt class='optional'>payload.instructions.signersCount<span class='property-type'>integer</span>
+        </dt>
+        <dd> Optional Number of signers that will be signing this transaction.</dd>
+    </dl>
+
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt>payload.txJSON<span class='property-type'>string</span>
+        </dt>
+        <dd> The prepared transaction in rippled JSON format.</dd>
+        <dt>payload.instructions<span class='property-type'>object</span>
+        </dt>
+        <dd> The instructions for how to execute the transaction after adding automatic defaults.</dd>
+        <dt>payload.instructions. fee<span class='property-type'>value</span>
+        </dt>
+        <dd> The fee to pay for the transaction. See Transaction Fees for more information. For multi-signed transactions, this fee will be multiplied by (N+1), where N is the number of signatures you plan to provide.</dd>
+        <dt>payload.instructions. sequence<span class='property-type'>sequence</span>
+        </dt>
+        <dd> The initiating account's sequence number for this transaction.</dd>
+        <dt>payload.instructions. maxLedgerVersion<span class='property-type'>integer,null</span>
+        </dt>
+        <dd> The highest ledger version that the transaction can be included in. Set to null if there is no maximum. If not null, this must be an integer greater than 0, or one of the following strings:'validated','closed','current'.</dd>
+        <dt>payload.instructions. maxLedgerVersion<span class='property-type'>string,null</span>
+        </dt>
+        <dd> The highest ledger version that the transaction can be included in. Set to null if there is no maximum. If not null, this must be an integer greater than 0, or one of the following strings:'validated','closed','current'.</dd>
+    </dl>
+    <h3>Reference</h3>
+    <ul>
+        <li><a href='https://xrpl.org/rippleapi-reference.html#preparepaymentchannelcreate'>See XRPL Docs</a></li>
+    </ul>
+</script>
+
+<!-- Finally, the node type is registered along with all of its properties   -->
+<script type="text/javascript">
+    RED.nodes.registerType('prepare-payment-channel-create', {
+        category:'XRPL Payment Channel', // the palette category
+        color: "#e2d96e",
+        defaults: { // defines the editable properties of the node
+            name: {
+                value: ""
+            },
+            server: {
+                value: "",
+                type: "get-server",
+                required: false
+            },
+            address: {
+                value: ""
+            },
+            paymentChannelCreate: {
+                value: {}
+            },
+            instructions: {
+                value: {}
+            },
+        },
+        inputs: 1, // set the number of inputs - only 0 or 1
+        outputs: 1, // set the number of outputs - 0 to n
+        // set the icon (held in icons dir below where you save the node)
+        icon: "create.png", // saved in  icons/myicon.png
+        label: function() { // sets the default label contents
+            return this.name || "Prepare Payment Channel Create";
+        },
+        labelStyle: function() { // sets the class to apply to the label
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+            let node = this;
+
+            const $accordionInstructions = $("#add-instruction-container");
+            const $accordionCancelAfter = $("#add-cancelAfter-container");
+
+            
+      $.widget( "ui.dayspinner", $.ui.spinner, {
+        options: {max: 31, min: 1},
+        _format: function( value ) {
+          return value > 9 ? "" + value: "0" + value;
+        }
+      });
+      $.widget( "ui.monthspinner", $.ui.spinner, {
+        options: {max: 12, min: 1},
+        _format: function( value ) {
+          return value > 9 ? "" + value: "0" + value;
+        }
+      });
+      $.widget( "ui.yearspinner", $.ui.spinner, {options: {min: new Date().getFullYear()}} );
+      $.widget( "ui.hourspinner", $.ui.spinner, {
+        options: {max: 23, min: 0},
+        _format: function( value ) {
+          return value > 9 ? "" + value: "0" + value;
+        }
+      });
+      $.widget( "ui.minutespinner", $.ui.spinner, {
+        options: {max: 59, min: 0},
+        _format: function( value ) {
+          return value > 9 ? "" + value: "0" + value;
+        }
+      });
+      $.widget( "ui.secondspinner", $.ui.spinner, {
+        options: {min: 0},
+        _format: function( value ) {
+          return value > 9 ? "" + value: "0" + value;
+        }
+      });
+
+      $( "#settleDelay" ).secondspinner();
+
+      const $cancelAfter = {
+        day: $( "#cancelAfter-day" ),
+        month: $( "#cancelAfter-month" ),
+        year: $( "#cancelAfter-year" ),
+        hour: $( "#cancelAfter-hours" ),
+        minute: $( "#cancelAfter-minutes" )
+      };
+
+      const updateCancelAfter = function (event){
+        $( "#cancelAfter" ).val($cancelAfter.year.val() + "-" + $cancelAfter.month.val() + "-"
+        + $cancelAfter.day.val() + "T" + $cancelAfter.hour.val() + ":" + $cancelAfter.minute.val() + ":00.000Z");
+      };
+
+      $cancelAfter.day.dayspinner({change: updateCancelAfter});
+      $cancelAfter.month.monthspinner({change: updateCancelAfter});
+      $cancelAfter.year.yearspinner({change: updateCancelAfter});
+      $cancelAfter.hour.hourspinner({change: updateCancelAfter});
+      $cancelAfter.minute.minutespinner({change: updateCancelAfter});
+
+            // **************************
+            // * General Init
+            // **************************
+            $accordionInstructions.accordion({
+                active: true,
+                collapsible: true,
+                heightStyle: "content"
+            });
+            $accordionCancelAfter.accordion({
+        active: true,
+        collapsible: true,
+        heightStyle: "content"
+      });
+
+
+      $('#cancelAfter-day').val(node.cancelAfter.day);
+      $('#cancelAfter-month').val(node.cancelAfter.month);
+      $('#cancelAfter-year').val(node.cancelAfter.year);
+      $('#cancelAfter-hours').val(node.cancelAfter.hours);
+      $('#cancelAfter-minutes').val(node.cancelAfter.minutes);
+
+      $('#cancelAfter').val(node.paymentChannelCreate.cancelAfter);
+
+            $('#amount').val(node.paymentChannelCreate.amount);
+            $('#destination').val(node.paymentChannelCreate.destination);
+            $('#settleDelay').val(node.paymentChannelCreate.settleDelay);
+            $('#publicKey').val(node.paymentChannelCreate.publicKey);
+            $('#destinationTag').val(node.paymentChannelCreate.destinationTag);
+            $('#sourceTag').val(node.paymentChannelCreate.sourceTag);
+
+            $("#instructions-fee").val(node.instructions.fee);
+            $("#instructions-maxFee").val(node.instructions.maxFee);
+            $("#instructions-maxLedgerVersion").val(node.instructions.maxLedgerVersion);
+            $("#instructions-maxLedgerVersion").val(node.instructions.maxLedgerVersion);
+            $("#instructions-maxLedgerVersionOffset").val(node.instructions.maxLedgerVersionOffset);
+            $("#instructions-sequence").val(node.instructions.sequence);
+            $("#instructions-signersCount").val(node.instructions.signersCount);
+
+        },
+        oneditsave: function() {
+
+            this.cancelAfter = {};
+      this.cancelAfter.day = $('#cancelAfter-day').val();
+      this.cancelAfter.month = $('#cancelAfter-month').val();
+      this.cancelAfter.year = $('#cancelAfter-year').val();
+      this.cancelAfter.hours = $('#cancelAfter-hours').val();
+      this.cancelAfter.minutes = $('#cancelAfter-minutes').val();
+
+      this.paymentChannelCreate.cancelAfter = $('#cancelAfter').val();
+
+            this.paymentChannelCreate.amount = $('#amount').val();
+            this.paymentChannelCreate.destination = $('#destination').val();
+            this.paymentChannelCreate.settleDelay = $('#settleDelay').val();
+            this.paymentChannelCreate.publicKey = $('#publicKey').val();
+            this.paymentChannelCreate.destinationTag = $('#destinationTag').val();
+            this.paymentChannelCreate.sourceTag = $('#sourceTag').val();
+
+            this.instructions.fee = $("#instructions-fee").val();
+            this.instructions.maxFee = $("#instructions-maxFee").val();
+            this.instructions.maxLedgerVersion = $("#instructions-maxLedgerVersion").val();
+            this.instructions.maxLedgerVersion = $("#instructions-maxLedgerVersion").val();
+            this.instructions.maxLedgerVersionOffset = $("#instructions-maxLedgerVersionOffset").val();
+            this.instructions.sequence = $("#instructions-sequence").val();
+            this.instructions.signersCount = $("#instructions-signersCount").val();
+        }
+
+    });
+</script>

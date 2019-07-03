@@ -10,31 +10,50 @@
 </script>
 
 <script type="text/x-red" data-help-name="generate-account-with-mnemonic">
-  <!-- data-help-name identifies the node type this help is for             -->
-  <!-- This content appears in the Info sidebar when a node is selected     -->
-  <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
-  <!-- node in the palette.                                                 -->
   <p>This node generates a new account keypair with a mnemonic.</p>
   <h3>Input</h3>
-   <ul>
-     <li> <b>Mnemonic</b>. [Optional][String] The base mnemonic used to derive the keypair, should be 24 words or more.</li>
-   </ul>
+  <dl class="message-properties">
+        <dt>Mnemonic
+            <span class="property-type">String</span>
+        </dt>
+        <dd> The base mnemonic used to derive the keypair, should be 24 words or more.</dd>
+    </dl>
+
   <h3>Output</h3>
    <p><b>msg</b>. An object containing the following:</p>
-   <ul>
-     <li> <b>msg.payload</b>. [Object] Containing the account</li>
-     <li> <b>msg.payload.mnemonic</b>. [String] The base mnemonic used to derive the keypair</li>
-     <li> <b>msg.payload.keypair</b>. [Object] Containing the keypair</li>
-     <li> <b>msg.payload.keypair.publicKey</b>. [String] The public key of the account</li>
-     <li> <b>msg.payload.keypair.privateKey</b>. [String] The private key of the account</li>
-     <li> <b>msg.payload.address</b>. [String] The address of the account</li>
-     <li> <b>msg.error</b>. [String] Contains any error messages. </li>
-   </ul>
+   <dl class="message-properties">
+        <dt>msg.payload
+            <span class="property-type">Object</span>
+        </dt>
+        <dd> Containing the account</dd>
 
+        <dt>msg.payload.mnemonic
+            <span class="property-type">String</span>
+        </dt>
+        <dd> The base mnemonic used to derive the keypair</dd>
+
+        <dt>msg.payload.keypair
+            <span class="property-type">Object</span>
+        </dt>
+        <dd> Containing the keypair</dd>
+
+        <dt>msg.payload.keypair.publicKey
+            <span class="property-type">String</span>
+        </dt>
+        <dd> The public key of the account</dd>
+
+        <dt>msg.payload.keypair.privateKey
+            <span class="property-type">String</span>
+        </dt>
+        <dd> The private key of the account</dd>
+
+        <dt>msg.payload.address
+            <span class="property-type">String</span>
+        </dt>
+        <dd> The address of the account</dd>
+    </dl>
 </script>
 
-<!-- Finally, the node type is registered along with all of its properties   -->
-<!-- The example below shows a small subset of the properties that can be set-->
 <script type="text/javascript">
     RED.nodes.registerType('generate-account-with-mnemonic',{
         category: 'XRPL',      // the palette category

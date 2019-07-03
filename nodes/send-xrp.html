@@ -1,165 +1,416 @@
 <script type="text/x-red" data-template-name="send-xrp">
-  <div class="form-row">
-      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
-      <input type="text" id="node-input-server">
-  </div>
-  <div class="form-row">
-      <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
-      <input type="text" id="node-input-name" placeholder="Node Name">
-  </div>
-  <div class="form-row">
-      <label for="node-input-sender"><i class="fa fa-tag"></i> Sender Address (From)</label>
-      <input type="hidden" id="node-input-override_payload" />
-      <input type="text" id="node-input-sender" placeholder="rwuMp76ht6dmGvipxwKr5ZE6VpF7ZKC7qs">
-  </div>
-  <div class="form-row">
-      <label for="node-input-secret"><i class="fa fa-tag"></i> Secret (Family Seed)</label>
+    <div class="form-row" title="Custom name to apply to this node">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
+        <input type="text" id="node-input-name" placeholder="Node Name">
+    </div>
+
+    <div class="form-row">
+        <h3>Transaction</h3>
+    </div>
+    <div class="form-row" title="Which rippled server to connect to? Leaving blank defaults to offline mode">
+        <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+
+    <!-- -------------------------------------------------------------- -->
+    <!-- Add Source                                                     -->
+    <!-- -------------------------------------------------------------- -->
+    <div class="form-row" id="add-source-container">
+        <h4>Send XRP</h4>
+        <div>
+            <div class='form-row' title='The address to send from.'>
+                <label for='payment-source-address'><i class='fa fa-tag'></i> Source Address (FROM)</label>
+                <input type='text' id='payment-source-address' placeholder=''>
+            </div>
+
+            <div class='form-row' title='Optional An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-XRP account.'>
+                <label for='payment-source-tag'><i class='fa fa-tag'></i> Source Tag (FROM)</label>
+                <input type='text' id='payment-source-tag' placeholder=''>
+            </div>
+
+            <div class='form-row' title='Optional The quantity of the currency, denoted as a string to retain floating point precision'>
+                <label for='payment-source-amount-value'><i class='fa fa-tag'></i> Amount</label>
+                <input type='text' id='payment-source-amount-value' placeholder=''>
+            </div>
+
+            <div class='form-row' title='The address to receive at.'>
+                <label for='payment-destination-address'><i class='fa fa-tag'></i> Destination Address (TO)</label>
+                <input type='text' id='payment-destination-address' placeholder=''>
+            </div>
+
+            <div class='form-row' title='Optional An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-XRP account.'>
+                <label for='payment-destination-tag'><i class='fa fa-tag'></i> Destination Tag (TO)</label>
+                <input type='text' id='payment-destination-tag' placeholder=''>
+            </div>
+        </div>
+    </div>
+
+    <div class='form-row' title='Optional A 256-bit hash that can be used to identify a particular payment.'>
+        <label for='payment-invoiceID'><i class='fa fa-tag'></i> Invoice ID</label>
+        <input type='text' id='payment-invoiceID' placeholder=''>
+    </div>
+
+    <!-- -------------------------------------------------------------- -->
+    <!-- Add Memos                                                      -->
+    <!-- -------------------------------------------------------------- -->
+    <div class="form-row" id="add-memo-container">
+        <h4>Add A Memo Field</h4>
+        <div>
+            <!-- Format Value -->
+            <div class="form-row" title="Optional Conventionally containing information on how the memo is encoded, for example as a MIME type . Only characters allowed in URLs are permitted.">
+                <label for="memo-format-value"><i class="fa fa-tag"></i> Format</label>
+                <input type="text" id="memo-format-value" />
+            </div>
+
+            <!-- Type Value -->
+            <div class="form-row">
+                <label for="memo-type-value" title="Optional Conventionally, a unique relation (according to RFC 5988 ) that defines the format of this memo. Only characters allowed in URLs are permitted."><i class="fa fa-tag"></i> Type</label>
+                <input type="text" id="memo-type-value" />
+            </div>
+
+            <!-- Data Value -->
+            <div class="form-row" title="Optional Arbitrary string, conventionally containing the content of the memo.">
+                <label for="memo-data-value"><i class="fa fa-tag"></i> Data</label>
+                <input type="text" id="memo-data-value" />
+            </div>
+
+            <!-- Add Memo Button -->
+            <div class="form-row">
+                <button id="memo-add-btn" style="width: 100%">Add Memo</button>
+            </div>
+
+            <!-- Memo List -->
+            <div class="form-row">
+                <ol id="memo-list"></ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+      <label for="node-input-secret"><i class="fa fa-tag"></i> Secret or Keypair</label>
       <input type="password" id="node-input-secret" placeholder="Used to sign the transaction">
   </div>
-  <div class="form-row">
-      <label for="node-input-destination"><i class="fa fa-tag"></i> Destination Address (To)</label>
-      <input type="text" id="node-input-destination" placeholder="rwuMp76ht6dmGvipxwKr5ZE6VpF7ZKC7qs">
-  </div>
-  <div class="form-row">
-      <label for="node-input-tag"><i class="fa fa-tag"></i> Destination Tag</label>
-      <input type="text" id="node-input-tag" placeholder="123456">
-  </div>
-  <div class="form-row">
-      <label for="node-input-amount"><i class="fa fa-tag"></i> Amount (XRP)</label>
-      <input type="text" id="node-input-amount" placeholder="">
-  </div>
-  <div class="form-row">
-      <label for="node-input-memos"><i class="fa fa-tag"></i> Memos</label>
-      <input type="text" id="node-input-memos" placeholder="">
-  </div>
-  <div class="form-row">
-      <label for="node-input-invoiceID"><i class="fa fa-tag"></i> InvoiceID</label>
-      <input type="text" id="node-input-invoiceID" placeholder="">
-  </div>
-  <div class="form-row">
-      <p>Wait For Validation</p>
-      <label for="node-input-validate" style="width:128px"><i class="fa fa-tag"></i> Enable?</label>
-      <input type="checkbox" id="node-input-validate"  style="width:58px" placeholder="Wait For Validation?">
 
-      <label for="node-input-waitTime" style="text-align:right; width:100px">><i class="fa fa-tag"></i> Wait Time</label>
-      <input type="text" id="node-input-waitTime" style="width:128px" placeholder="Add the seconds you wish to wait for validation">
-  </div>
-</script>
-
-<script type="text/x-red" data-help-name="send-xrp">
-   <p>This node allows you to send XRP to another account. Memo, Destination Tag, InvoiceID fields all supported</p>
-  <a href='https://developers.ripple.com/payment.html'>XRP API</a>
-   <h3>Inputs</h3>
+  <div class="form-row">
+        <label for="node-input-validate"><i class="fa fa-tag"></i> Validate?</label>
+        <input type="checkbox" checked id="node-input-validate" placeholder="Validate?">
+    </div>
+    <div class="form-row">
+        <label for="node-input-waitTime"><i class="fa fa-tag"></i> Wait Time To Validate (Seconds)?</label>
+        <input type="input" id="node-input-waitTime" value='6'>
+    </div>
+  </script>
+  
+  <script type="text/x-red" data-help-name="send-xrp">
+    <p>Prepare a payment transaction. The prepared transaction must subsequently be signed and submitted.</p>
+    <h3>Inputs</h3>
    <p>
      Set via <b>msg.payload</b>, or set within the node interface.
    </p>
     <dl class="message-properties">
-        <dt>sender / payload.sender
-            <span class="property-type">String</span>
-        </dt>
-        <dd> The source XRP address that will be used to send XRP.</dd>
-        <dt>destination / payload.destination
-            <span class="property-type">String</span>
-        </dt>
-        <dd> The destination XRP address that will receive XRP.</dd>
-        <dt>amount / payload.amount
-            <span class="property-type">String</span>
-        </dt>
-        <dd> The amount of XRP to send.</dd>
-        <dt>secret / payload.secret
-            <span class="property-type">String</span>
-        </dt>
-        <dd> The secret used to sign the transaction. <p style='color:red;'><b>NOTE!!!</b></p> If stored within the node then exporting the flow won't expose your secret key however if stored within a function THIS WILL be exposed if exporting your flow to be shared or storing your flows on repositories!!</dd>
-        <dt class="optional">tag / payload.tag
-            <span class="property-type">int</span>
-        </dt>
-        <dd> The destination tag.</dd>
-        <dt class="optional">memos / payload.memos
-            <span class="property-type">string</span>
-        </dt>
-        <dd> A memo string to add to the transaction. Maximum 1013 bytes.</dd>
-        <dt class="optional">invoiceID / payload.invoiceID
-            <span class="property-type">string</span>
-        </dt>
-        <dd> InvoiceID to add to the transaction. Must be a 256 Hash.</dd>
-        <dt class="optional">validate / payload.validate
-            <span class="property-type">boolean</span>
-        </dt>
-        <dd> If set the node will wait a default of 6 seconds for confirmation of a successfull transaction.</dd>
-        <dt class="optional">waitTime / payload.waitTime
-            <span class="property-type">int</span>
-        </dt>
-        <dd> The time in seconds to wait for confirmation if validate is enabled.</dd>
+      <dt class="optional">Name
+          <span class="property-type">String</span>
+      </dt>
+      <dd> Custom name to apply to this node</dd>
+  
+      <dt class="optional">Server
+          <span class="property-type">Node</span>
+      </dt>
+      <dd> Which rippled server to connect to? Leaving blank defaults to offline mode</dd>
+  
+      <dt>payload.address<span class='property-type'>address</span>
+      </dt>
+      <dd> The address of the account that is creating the transaction.</dd>
+      <dt>payload.payment<span class='property-type'>payment</span>
+      </dt>
+      <dd> The specification of the payment to prepare.</dd>
+      <dt>payload.payment.source<span class='property-type'>object</span>
+      </dt>
+      <dd> The source of the funds to be sent.</dd>
+      <dt>payload.payment.source.address<span class='property-type'>address</span>
+      </dt>
+      <dd> The address to send from.</dd>
+      <dt>payload.payment.source.amount<span class='property-type'>laxAmount</span>
+      </dt>
+      <dd> An exact amount to send. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with source.maxAmount)</dd>
+      <dt>payload.payment.source.amount.currency<span class='property-type'>currency</span>
+      </dt>
+      <dd> The three-character code or hexadecimal string used to denote currencies, or "drops" for the smallest unit of XRP.</dd>
+      <dt class='optional'>payload.payment.source.amount.counterparty<span class='property-type'>address</span>
+      </dt>
+      <dd> Optional The XRP address of the account that owes or is owed the funds (omitted if currency is "XRP" or "drops")</dd>
+      <dt class='optional'>payload.payment.source.amount.value<span class='property-type'>value</span>
+      </dt>
+      <dd> Optional The quantity of the currency, denoted as a string to retain floating point precision</dd>
+      <dt class='optional'>payload.payment.source.tag<span class='property-type'>integer</span>
+      </dt>
+      <dd> Optional An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-XRP account.</dd>
+      <dt>payload.payment.source.maxAmount<span class='property-type'>laxAmount</span>
+      </dt>
+      <dd> The maximum amount to send. (This field is exclusive with source.amount)</dd>
+      <dt>payload.payment.source.maxAmount.currency<span class='property-type'>currency</span>
+      </dt>
+      <dd> The three-character code or hexadecimal string used to denote currencies, or "drops" for the smallest unit of XRP.</dd>
+      <dt class='optional'>payload.payment.source.maxAmount.counterparty<span class='property-type'>address</span>
+      </dt>
+      <dd> Optional The XRP address of the account that owes or is owed the funds (omitted if currency is "XRP" or "drops")</dd>
+      <dt class='optional'>payload.payment.source.maxAmount.value<span class='property-type'>value</span>
+      </dt>
+      <dd> Optional The quantity of the currency, denoted as a string to retain floating point precision</dd>
+      <dt>payload.payment.destination<span class='property-type'>object</span>
+      </dt>
+      <dd> The destination of the funds to be sent.</dd>
+      <dt>payload.payment.destination.address<span class='property-type'>address</span>
+      </dt>
+      <dd> The address to receive at.</dd>
+      <dt>payload.payment.destination.amount<span class='property-type'>laxAmount</span>
+      </dt>
+      <dd> An exact amount to deliver to the recipient. If the counterparty is not specified, amounts with any counterparty may be used. (This field cannot be used with destination.minAmount.)</dd>
+      <dt>payload.payment.destination.amount.currency<span class='property-type'>currency</span>
+      </dt>
+      <dd> The three-character code or hexadecimal string used to denote currencies, or "drops" for the smallest unit of XRP.</dd>
+      <dt class='optional'>payload.payment.destination.amount.counterparty<span class='property-type'>address</span>
+      </dt>
+      <dd> Optional The XRP address of the account that owes or is owed the funds (omitted if currency is "XRP" or "drops")</dd>
+      <dt class='optional'>payload.payment.destination.amount.value<span class='property-type'>value</span>
+      </dt>
+      <dd> Optional The quantity of the currency, denoted as a string to retain floating point precision</dd>
+      <dt class='optional'>payload.payment.destination.tag<span class='property-type'>integer</span>
+      </dt>
+      <dd> Optional An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-XRP account.</dd>
+      <dt>payload.payment.destination.address<span class='property-type'>address</span>
+      </dt>
+      <dd> The address to send to.</dd>
+      <dt>payload.payment.destination.minAmount<span class='property-type'>laxAmount</span>
+      </dt>
+      <dd> The minimum amount to be delivered. (This field is exclusive with destination.amount)</dd>
+      <dt>payload.payment.destination.minAmount.currency<span class='property-type'>currency</span>
+      </dt>
+      <dd> The three-character code or hexadecimal string used to denote currencies, or "drops" for the smallest unit of XRP.</dd>
+      <dt class='optional'>payload.payment.destination.minAmount.counterparty<span class='property-type'>address</span>
+      </dt>
+      <dd> Optional The XRP address of the account that owes or is owed the funds (omitted if currency is "XRP" or "drops")</dd>
+      <dt class='optional'>payload.payment.destination.minAmount.value<span class='property-type'>value</span>
+      </dt>
+      <dd> Optional The quantity of the currency, denoted as a string to retain floating point precision</dd>
+      <dt class='optional'>payload.payment.allowPartialPayment<span class='property-type'>boolean</span>
+      </dt>
+      <dd> Optional If true, this payment should proceed even if the whole amount cannot be delivered due to a lack of liquidity or a lack of funds in the source account.</dd>
+      <dt class='optional'>payload.payment.invoiceID<span class='property-type'>string</span>
+      </dt>
+      <dd> Optional A 256-bit hash that can be used to identify a particular payment.</dd>
+      <dt class='optional'>payload.payment.limitQuality<span class='property-type'>boolean</span>
+      </dt>
+      <dd> Optional Only take paths where all the conversions have an input:output ratio that is equal or better than the ratio of destination.amount:source.maxAmount.</dd>
+      <dt class='optional'>payload.payment.memos<span class='property-type'>memos</span>
+      </dt>
+      <dd> Optional Array of memos to attach to the transaction.</dd>
+      <dt class='optional'>payload.payment.memos.data<span class='property-type'>string</span>
+      </dt>
+      <dd> Optional Arbitrary string, conventionally containing the content of the memo.</dd>
+      <dt class='optional'>payload.payment.memos.format<span class='property-type'>string</span>
+      </dt>
+      <dd> Optional Conventionally containing information on how the memo is encoded, for example as a MIME type . Only characters allowed in URLs are permitted.</dd>
+      <dt class='optional'>payload.payment.memos.type<span class='property-type'>string</span>
+      </dt>
+      <dd> Optional Conventionally, a unique relation (according to RFC 5988 ) that defines the format of this memo. Only characters allowed in URLs are permitted.</dd>
+      <dt class='optional'>payload.payment.noDirectRipple<span class='property-type'>boolean</span>
+      </dt>
+      <dd> Optional If true and paths are specified, the sender would like the XRP Ledger to disregard any direct paths from the source account to the destination account. This may be used to take advantage of an arbitrage opportunity or by gateways wishing to issue balances from a hot wallet to a user who has mistakenly set a trustline directly to the hot wallet.</dd>
+      <dt class='optional'>payload.payment.paths<span class='property-type'>string</span>
+      </dt>
+      <dd> Optional The paths of trustlines and orders to use in executing the payment.</dd>
+      <dt class='optional'>payload.instructions<span class='property-type'>instructions</span>
+      </dt>
+      <dd> Optional Instructions for executing the transaction</dd>
+      <dt class='optional'>payload.instructions.fee<span class='property-type'>value</span>
+      </dt>
+      <dd> Optional An exact fee to pay for the transaction, before multiplying for multi-signed transactions. See Transaction Fees for more information.</dd>
+      <dt class='optional'>payload.instructions.maxLedgerVersion<span class='property-type'>integer,null</span>
+      </dt>
+      <dd> Optional The highest ledger version that the transaction can be included in. If this option and maxLedgerVersionOffset are both omitted, the maxLedgerVersion option will default to 3 greater than the current validated ledger version (equivalent to maxLedgerVersionOffset=3). Use null to not set a maximum ledger version. If not null, this must be an integer greater than 0, or one of the following strings: 'validated', 'closed', 'current'.</dd>
+      <dt class='optional'>payload.instructions.maxLedgerVersionOffset<span class='property-type'>integer</span>
+      </dt>
+      <dd> Optional Offset from current validated ledger version to highest ledger version that the transaction can be included in.</dd>
+      <dt class='optional'>payload.instructions.sequence<span class='property-type'>sequence</span>
+      </dt>
+      <dd> Optional The initiating account's sequence number for this transaction.</dd>
+      <dt class='optional'>payload.instructions.signersCount<span class='property-type'>integer</span>
+      </dt>
+      <dd> Optional Number of signers that will be signing this transaction.</dd>
     </dl>
-
+  
    <h3>Output</h3>
     <dl class="message-properties">
-        <dt>payload
-            <span class="property-type">Object</span>
-        </dt>
-        <dd> Contains further objects if successfull.</dd>
-        <dt>payload.signedTX
-            <span class="property-type">Object</span>
-        </dt>
-        <dd> Contains the signed transaction to be submitted.</dd>
-        <dt>payload.resultTX
-            <span class="property-type">Object</span>
-        </dt>
-        <dd> Contains the response after submitting the signed transaction to the ledger.</dd>
-        <dt>payload.validateTX
-            <span class="property-type">Object</span>
-        </dt>
-        <dd> Contains the result of the transaction if validate is selected. <p style='color:blue;'><b>Note</b></p> The transaction may still be successfull if you receive a missingledger message, you may need to just wait a little longer, check the ledger.</dd>
-        <dt>error
-            <span class="property-type">String</span>
-        </dt>
-        <dd> Contains any error messages.</dd>
+      <dt>payload.txJSON<span class='property-type'>string</span>
+      </dt>
+      <dd> The prepared transaction in rippled JSON format.</dd>
+      <dt>payload.instructions<span class='property-type'>object</span>
+      </dt>
+      <dd> The instructions for how to execute the transaction after adding automatic defaults.</dd>
+      <dt>payload.instructions. fee<span class='property-type'>value</span>
+      </dt>
+      <dd> The fee to pay for the transaction. See Transaction Fees for more information. For multi-signed transactions, this fee will be multiplied by (N+1), where N is the number of signatures you plan to provide.</dd>
+      <dt>payload.instructions. sequence<span class='property-type'>sequence</span>
+      </dt>
+      <dd> The initiating account's sequence number for this transaction.</dd>
+      <dt>payload.instructions. maxLedgerVersion<span class='property-type'>integer,null</span>
+      </dt>
+      <dd> The highest ledger version that the transaction can be included in. Set to null if there is no maximum. If not null, this must be an integer greater than 0, or one of the following strings: 'validated', 'closed', 'current'.</dd>
+      <dt>payload.instructions. maxLedgerVersion<span class='property-type'>string,null</span>
+      </dt>
+      <dd> The highest ledger version that the transaction can be included in. Set to null if there is no maximum. If not null, this must be an integer greater than 0, or one of the following strings: 'validated', 'closed', 'current'.</dd>
     </dl>
-</script>
-
-<script type="text/javascript">
+    <h3>Reference</h3>
+    <ul>
+      <li><a href='https://xrpl.org/rippleapi-reference.html#preparepayment'>See XRPL Docs</a></li>
+    </ul>
+  </script>
+  
+  <!-- Finally, the node type is registered along with all of its properties   -->
+  <script type="text/javascript">
     RED.nodes.registerType('send-xrp',{
-        category: 'XRPL',      // the palette category
-        color: "#52C0F2",
-        defaults: {             // defines the editable properties of the node
-            name: {value:""},   //  along with default values.
-            sender: {value:""},
-            destination: {value:""},
-            tag: {value:""},
-            validate: {value:false},
-            waitTime: {value: 7},
-            amount: {value:""},
-            memos: { value: ""},
-            invoiceID: { value: ""},
-            server: {value:"", type:"get-server"}
-        },
-        credentials: {
+      category: 'XRPL',      // the palette category
+      color: "#52c0f2",
+      defaults: {             // defines the editable properties of the node
+          name: {value:""},
+          server: {value:"", type:"get-server", required: false},
+          address: {value:""},
+          payment: {value: {}},
+          validate: {value: false},
+          waitTime: {value: 6}
+      },
+      credentials: {
            secret: {type:"password"}
         },
-        inputs:1,               // set the number of inputs - only 0 or 1
-        outputs:1,              // set the number of outputs - 0 to n
-        // set the icon (held in icons dir below where you save the node)
-        icon: "xrp.png",     // saved in  icons/myicon.png
-        label: function() {     // sets the default label contents
-            return this.name||"Send XRP";
-        },
-        labelStyle: function() { // sets the class to apply to the label
-            return this.name?"node_label_italic":"";
-        },
-        oneditprepare: function() {
-          const $sender = $("#node-input-sender");
+      inputs:1,               // set the number of inputs - only 0 or 1
+      outputs:1,              // set the number of outputs - 0 to n
+      // set the icon (held in icons dir below where you save the node)
+      icon: "xrp.png",     // saved in  icons/myicon.png
+      label: function() {     // sets the default label contents
+          return this.name||"Send XRP";
+      },
+      labelStyle: function() { // sets the class to apply to the label
+          return this.name?"node_label_italic":"";
+      },
+      oneditprepare: function() {
+        let node = this;
+        const $accordionMemo = $("#add-memo-container");
+  
+        const $memos = {
+          list: $("#memo-list"),
+          addBtn: $("#memo-add-btn"),
+  
+          data: $("#memo-data-value"),
+          format: $("#memo-format-value"),
+          type: $("#memo-type-value")
+        };
+  
+        // **************************
+        // * Add Memos
+        // **************************
+        const memosHandler = {
+          onAddMemoButton: function(e) {
+            const memo = {
+              //id: utils.getRandomId(),
+              data: $memos.data.val(),
+              format: $memos.format.val(),
+              type: $memos.type.val()
+            };
+  
+            $memos.list.editableList("addItem", memo);
+            $memos.data.val("");
+            $memos.format.val("");
+            $memos.type.val("");
+          },
+          onEditableListAdd: function(row, index, value) {
+            const $row = $(row);
+            const {
+              type,
+              format,
+              data
+            } = value;
+  
+            const rowHtml = `
+            <b>Format:</b>&nbsp;${format}<br>
+            <b>Type:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${type}<br>
+            <b>Data:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${data}`;
+            $row.html(rowHtml);
+          }
+        };
+  
+        $memos.addBtn.on("click", memosHandler.onAddMemoButton);
+  
+        // Memos List
+        $memos.list.editableList({
+          addButton: false,
+          height: 100,
+          sortable: true,
+          removable: true,
+          addItem: memosHandler.onEditableListAdd
+        });
+  
+        // **************************
+        // * General Init
+        // **************************
+        $accordionMemo.accordion({
+          active: true,
+          collapsible: true,
+          heightStyle: "content"
+        });
+  
+        // Add previous memos to editable lists
+        node.payment.memos.forEach(c =>
+          $memos.list.editableList("addItem", c)
+        );
+  
+        $("#payment-source-address").val(node.payment.source.address);
+        $("#payment-source-tag").val(node.payment.source.tag);
 
-          $sender
-            .typedInput({
-              types: ["msg", "flow", "global", NoneType],
-              typeField: "#node-input-override_payload"
-            })
-            .typedInput("width", "68%");
+        $("#payment-source-amount-value").val(node.payment.source.amount.value);
+  
+        $("#payment-destination-address").val(node.payment.destination.address);
+        $("#payment-destination-tag").val(node.payment.destination.tag);
 
-          $sender.val("payload");
-          $("#node-input-override_payload").val(
-            node.override_payload === false ? "none" : "msg"
-          );
-        }
+        $("#payment-invoiceID").val(node.payment.invoiceID); 
+        
+        $("#validate").val(node.validate); 
+        $("#waitTime").val(node.waitTime); 
+      },
+      oneditsave: function() {
+        const $memosList = $("#memo-list");
+  
+        // Compile Memos
+        const nodeMemos = [];
+        const listMemos = $memosList.editableList("items");
+        listMemos.each(function(i) {
+          nodeMemos.push($(this).data("data"));
+        });
+  
+        this.payment.memos = nodeMemos;
+  
+        this.payment.source = {};
+        this.address = $("#payment-source-address").val()
+        this.payment.source.address = $("#payment-source-address").val();
+        this.payment.source.tag = $("#payment-source-tag").val();
+
+        this.payment.source.amount = {}
+        this.payment.source.amount.currency = 'XRP';
+        this.payment.source.amount.value = $("#payment-source-amount-value").val();
+  
+        this.payment.destination = {};
+        this.payment.destination.address = $("#payment-destination-address").val();
+        this.payment.destination.tag = $("#payment-destination-tag").val();
+
+        this.payment.destination.minAmount = {}
+        this.payment.destination.minAmount.currency = 'XRP'
+        this.payment.destination.minAmount.value = $("#payment-source-amount-value").val();
+
+        this.payment.invoiceID = $("#payment-invoiceID").val();
+
+        this.validate = $("#validate").val();
+        this.waitTime = $("#waitTime").val();  
+      }
     });
-</script>
+  </script>
+  

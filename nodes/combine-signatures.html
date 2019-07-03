@@ -1,0 +1,145 @@
+<script type="text/x-red" data-template-name="combine-signatures">
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <div class="form-row">
+    <!-- Transaction Value -->
+    <div class="form-row" title="Optional Arbitrary string, conventionally containing the content of the memo.">
+        <label for="transaction-value"><i class="fa fa-tag"></i> Transaction to Combine</label>
+        <input type="text" id="transaction-value"/>
+    </div>
+
+    <!-- Add Transaction Button -->
+    <div class="form-row">
+        <button id="transaction-add-btn" style="width: 100%">Add</button>
+    </div>
+
+    <!-- Transaction List -->
+    <div class="form-row">
+        <ol id="transaction-list"></ol>
+    </div>
+</div>
+</script>
+
+<script type="text/x-red" data-help-name="combine-signatures">
+  <p> Combines an array of signed transactions.</p>
+  <h3>Inputs</h3>
+  <p>
+    Set via <b>msg.payload</b>, or set within the node interface.
+  </p>
+   <dl class="message-properties">
+       <dt>signedTransactions
+           <span class="property-type">Array</span>
+       </dt>
+       <dd> An array of signed transactions (from the output of sign) to combine.</dd>
+   </dl>
+
+  <h3>Output</h3>
+   <dl class="message-properties">
+       <dt>payload
+           <span class="property-type">Object</span>
+       </dt>
+       <dd> Contains further objects if successfull.</dd>
+       
+       <dt>payload.signedTransaction
+           <span class="property-type">Object</span>
+       </dt>
+       <dd> The signed transaction represented as an uppercase hexadecimal string.</dd>
+
+       <dt>payload.id
+           <span class="property-type">transactionHash</span>
+       </dt>
+       <dd> The Transaction ID of the signed transaction.</dd>
+       
+
+       <dt>error
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Contains any error messages.</dd>
+   </dl>
+   <a href='https://xrpl.org/rippleapi-reference.html#combine'>See XRPL Docs</a>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('combine-signatures',{
+        category: 'XRPL Advanced', // the palette category
+        color: "#c0deed",
+        defaults: { // defines the editable properties of the node
+        name: {value:""}, // along with default values.
+        signedTransactions: {value:[]}
+    },
+    inputs:1, // set the number of inputs - only 0 or 1
+    outputs:1, // set the number of outputs - 0 to n
+    // set the icon (held in icons dir below where you save the node)
+    icon: "sign.png", // saved in icons/myicon.png
+    label: function() { // sets the default label contents
+        return this.name||"Combine Signatures";
+    },
+    labelStyle: function() { // sets the class to apply to the label
+        return this.name?"node_label_italic":"";
+    },
+    oneditprepare: function() {
+        let node = this;
+        const $transactions = {
+            list: $("#transaction-list"),
+            addBtn: $("#transaction-add-btn"),
+            value: $("#transaction-value")
+        };
+
+        // **************************
+        // * Add Transaction
+        // **************************
+        const transactionsHandler = {
+            onAddTransactionButton: function(e) {
+                const transaction = {
+                    value: $transactions.value.val()
+                };
+
+                $transactions.list.editableList("addItem", transaction);
+                $transactions.value.val("");
+            },
+            onEditableListAdd: function(row, index, data) {
+                const $row = $(row);
+                const {
+                    value
+                } = data;
+
+                const rowHtml = `
+                <b>Signed Transaction:</b>&nbsp;${value}`;
+                $row.html(rowHtml);
+            }
+        };
+
+        $transactions.addBtn.on("click", transactionsHandler.onAddTransactionButton);
+
+        // Transactions List
+        $transactions.list.editableList({
+            addButton: false,
+            height: 100,
+            sortable: true,
+            removable: true,
+            addItem: transactionsHandler.onEditableListAdd
+        });
+
+        // Add previous transactions to editable lists
+        node.signedTransactions.forEach(c =>
+            $transactions.list.editableList("addItem", {value:c})
+        );
+
+    },
+    oneditsave: function() {
+        const $transactionsList = $("#transaction-list");
+
+        // Compile Transactions
+        const nodeTransactions = [];
+        const listTransactions = $transactionsList.editableList("items");
+        listTransactions.each(function(i) {
+            nodeTransactions.push($(this).data("data").value);
+        });
+
+        this.signedTransactions = nodeTransactions;
+        }
+    });
+</script>

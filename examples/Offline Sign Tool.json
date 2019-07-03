@@ -1,0 +1,1344 @@
+[
+    {
+        "id": "5326a839.b07ce8",
+        "type": "tab",
+        "label": "Offline Sign",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "c8fdf623.460b68",
+        "type": "generate-qrcode",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "x": 1050,
+        "y": 760,
+        "wires": [
+            [
+                "b6da21f.4bf94e"
+            ]
+        ]
+    },
+    {
+        "id": "a505e134.dbc8",
+        "type": "ui_template",
+        "z": "5326a839.b07ce8",
+        "group": "c29742f0.39742",
+        "name": "Text Result",
+        "order": 2,
+        "width": "12",
+        "height": "6",
+        "format": "<h2 style=\"text-align: center;\">Signed Transaction:</h2>\n<div style=\"text-align: center;\">\n    <textarea id=\"signedTransaction\" onclick=\"copyText()\" style='overflow-wrap: break-word;height: 130px;background-color: unset;color:unset; width:100%;'>{{msg.payload}}</textarea>\n</div>\n<div style=\"text-align: center;\">\n    <button onclick=\"copyText()\" class=\"md-raised md-button md-ink-ripple\" style=\"text-align: center; margin-top:15px;\">Copy Transaction</button>\n</div>\n<script>\n    function copyText(){\n        var copyText = document.getElementById(\"signedTransaction\");\n        copyText.select();\n        document.execCommand(\"copy\");\n        clearSelection();\n    }\n    function clearSelection()\n    {\n        if (window.getSelection) {window.getSelection().removeAllRanges();}\n        else if (document.selection) {document.selection.empty();}\n    }\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 1030,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e7d60f14.74879",
+        "type": "ui_button",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "group": "fe392bb5.c564a8",
+        "order": 4,
+        "width": "12",
+        "height": "1",
+        "passthru": false,
+        "label": "Sign",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "{\"group\":{\"hide\":[\"Offline_Sign_Sign_Transaction\",\"Offline_Sign_Prepare_Transaction\"],\"show\":[\"Offline_Sign_Result\"]}}",
+        "payloadType": "json",
+        "topic": "",
+        "x": 70,
+        "y": 780,
+        "wires": [
+            [
+                "2ca9a81.2fe1458"
+            ]
+        ]
+    },
+    {
+        "id": "2ca9a81.2fe1458",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Sign",
+        "func": "var msg1, msgerror;\nvar secret = flow.get(\"secret\");\nif(secret != \"\" && secret != null){\n    var raw = flow.get(\"rawTransaction\");\n    msg1 = {payload:{txJSON: JSON.stringify(raw), secret: secret}};\n}\nelse {\n    msgerror = {error:\"<div>Please populate the secret</div>\"};\n}\nreturn [msg1, msgerror];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 190,
+        "y": 780,
+        "wires": [
+            [
+                "59467d90.fb04e4"
+            ],
+            [
+                "37b6e548.b05a5a"
+            ]
+        ]
+    },
+    {
+        "id": "68c89c8.1a51264",
+        "type": "ui_template",
+        "z": "5326a839.b07ce8",
+        "group": "c29742f0.39742",
+        "name": "QR Result",
+        "order": 3,
+        "width": "12",
+        "height": "9",
+        "format": "<div style=\"text-align: center;\">\n    <img style=\"background-color: black; \" src=\"{{msg.payload.qr}}\">\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 1410,
+        "y": 760,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b6da21f.4bf94e",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Format Image",
+        "func": "var qr = msg.payload;\nmsg.payload = {\"qr\":qr};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1240,
+        "y": 760,
+        "wires": [
+            [
+                "68c89c8.1a51264"
+            ]
+        ]
+    },
+    {
+        "id": "de14e00.f2e502",
+        "type": "ui_text_input",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "Account* (FROM)",
+        "tooltip": "FROM XRP ADDRESS",
+        "group": "e16c55bb.a2d8b8",
+        "order": 2,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "Account",
+        "x": 550,
+        "y": 280,
+        "wires": [
+            [
+                "338803ec.7a04dc"
+            ]
+        ]
+    },
+    {
+        "id": "841001e.939d8",
+        "type": "ui_text_input",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "Destination* (TO)",
+        "tooltip": "THE RECEIVER ACCOUNT",
+        "group": "e16c55bb.a2d8b8",
+        "order": 6,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "Destination",
+        "x": 550,
+        "y": 320,
+        "wires": [
+            [
+                "338803ec.7a04dc"
+            ]
+        ]
+    },
+    {
+        "id": "a0f4134b.07caf",
+        "type": "ui_text_input",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "XRP Amount*",
+        "tooltip": "AMOUNT IN XRP",
+        "group": "e16c55bb.a2d8b8",
+        "order": 4,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "Amount",
+        "x": 540,
+        "y": 240,
+        "wires": [
+            [
+                "97d8c619.720868"
+            ]
+        ]
+    },
+    {
+        "id": "da94fce4.68e28",
+        "type": "ui_text_input",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "Fee* (Drops)",
+        "tooltip": "TRANSACTIONS FEE IN DROPS. QUERY THE CURRENT FEE FROM A RIPPLED SERVER TO CHECK THE CORRECT AMOUNT.",
+        "group": "e16c55bb.a2d8b8",
+        "order": 3,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "Fee",
+        "x": 530,
+        "y": 400,
+        "wires": [
+            [
+                "338803ec.7a04dc"
+            ]
+        ]
+    },
+    {
+        "id": "c6b6c379.e56ce",
+        "type": "ui_text_input",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "Sequence Number*",
+        "tooltip": "THE NEXT SEQUENCE NUMBER FOR THE INITIATING ACCOUNT",
+        "group": "e16c55bb.a2d8b8",
+        "order": 5,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "Sequence",
+        "x": 550,
+        "y": 440,
+        "wires": [
+            [
+                "338803ec.7a04dc"
+            ]
+        ]
+    },
+    {
+        "id": "56602c95.2dda24",
+        "type": "ui_text_input",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "Last Ledger Sequence*",
+        "tooltip": "IMPORTANT VALUE - SHOULD BE SET TO A LEDGER SEQUENCE CLOSE TO THE MOST RECENT ONE TO AVOID STUCK TRANSACTIONS. ADD 180 TO THE CURRENT LEDGER SEQUENCE FOR ROUGHLY A 10-15 MINUTE WINDOW TO SUBMIT TO THE LEDGER.",
+        "group": "e16c55bb.a2d8b8",
+        "order": 7,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "LastLedgerSequence",
+        "x": 570,
+        "y": 480,
+        "wires": [
+            [
+                "338803ec.7a04dc"
+            ]
+        ]
+    },
+    {
+        "id": "903e8a02.401c98",
+        "type": "ui_text_input",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "Raw Transaction",
+        "tooltip": "EDIT THIS FIELD TO ADD CUSTOM FIELDS OR TO CREATE A CUSTOM TRANSACTION TYPE",
+        "group": "e16c55bb.a2d8b8",
+        "order": 10,
+        "width": "24",
+        "height": "1",
+        "passthru": false,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "x": 1030,
+        "y": 360,
+        "wires": [
+            [
+                "a1b58d87.a8ddc"
+            ]
+        ]
+    },
+    {
+        "id": "338803ec.7a04dc",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Field",
+        "func": "var rawTransaction = flow.get(\"rawTransaction\");\n\nif (rawTransaction == null) rawTransaction = {};\n\nrawTransaction[msg.topic] = msg.payload;\nflow.set(\"rawTransaction\", rawTransaction);\n\nmsg.payload = JSON.stringify(rawTransaction);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 820,
+        "y": 360,
+        "wires": [
+            [
+                "903e8a02.401c98"
+            ]
+        ]
+    },
+    {
+        "id": "ce5f7cdc.04ea4",
+        "type": "ui_button",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "group": "2ec27063.ff418",
+        "order": 1,
+        "width": "24",
+        "height": "1",
+        "passthru": false,
+        "label": "Clear",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 530,
+        "y": 100,
+        "wires": [
+            [
+                "62528f17.dc906",
+                "b955c026.4b76"
+            ]
+        ]
+    },
+    {
+        "id": "62528f17.dc906",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Reset",
+        "func": "var raw = {\"Flags\": 2147483648, \"Fee\":\"12\", \"TransactionType\":\"Payment\"};\nflow.set(\"rawTransaction\", raw);\nmsg.payload = JSON.stringify(raw);\nmsg.payload.text = \"\";\nmsg.payload.qr = \"\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 670,
+        "y": 100,
+        "wires": [
+            [
+                "dfff58d3.c55348",
+                "ef4ca884.ff4a98",
+                "39a83e07.672e72",
+                "10214fa.7e345b",
+                "77a7f7bc.d35cd8",
+                "2c278b15.eab444"
+            ]
+        ]
+    },
+    {
+        "id": "f5af87d9.785d78",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Update Inputs",
+        "func": "var rawTransaction = JSON.parse(msg.payload);\nflow.set(\"rawTransaction\", rawTransaction);\nmsg.payload = rawTransaction;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 160,
+        "y": 360,
+        "wires": [
+            [
+                "23a74769.906178",
+                "a39d6eeb.87ed3",
+                "e59f28cb.64e3c8",
+                "a0219e9c.fbe45",
+                "55808227.b04dec",
+                "12ddf946.713967",
+                "e221f94b.172108"
+            ]
+        ]
+    },
+    {
+        "id": "23a74769.906178",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Account",
+        "func": "msg.payload = msg.payload.Account;\nif (msg.payload == null) msg.payload = \"\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 280,
+        "wires": [
+            [
+                "de14e00.f2e502"
+            ]
+        ]
+    },
+    {
+        "id": "a39d6eeb.87ed3",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Amount",
+        "func": "msg.payload = parseFloat(msg.payload.Amount) / 100000;\nif (msg.payload == null) msg.payload = \"\";\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 240,
+        "wires": [
+            [
+                "a0f4134b.07caf"
+            ]
+        ]
+    },
+    {
+        "id": "e59f28cb.64e3c8",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Destination",
+        "func": "msg.payload = msg.payload.Destination;\nif (msg.payload == null) msg.payload = \"\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 360,
+        "y": 320,
+        "wires": [
+            [
+                "841001e.939d8"
+            ]
+        ]
+    },
+    {
+        "id": "55808227.b04dec",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Fee",
+        "func": "msg.payload = msg.payload.Fee;\n\nif (msg.payload == null) msg.payload = \"\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 380,
+        "y": 400,
+        "wires": [
+            [
+                "da94fce4.68e28"
+            ]
+        ]
+    },
+    {
+        "id": "12ddf946.713967",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Sequence",
+        "func": "msg.payload = msg.payload.Sequence;\nif (msg.payload == null) msg.payload = \"\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 360,
+        "y": 440,
+        "wires": [
+            [
+                "c6b6c379.e56ce"
+            ]
+        ]
+    },
+    {
+        "id": "e221f94b.172108",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Ledger",
+        "func": "msg.payload = msg.payload.LastLedgerSequence;\nif (msg.payload == null) msg.payload = \"\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 480,
+        "wires": [
+            [
+                "56602c95.2dda24"
+            ]
+        ]
+    },
+    {
+        "id": "610e7f24.83005",
+        "type": "ui_button",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "group": "e16c55bb.a2d8b8",
+        "order": 11,
+        "width": "24",
+        "height": "1",
+        "passthru": false,
+        "label": "Prepare Transaction",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "{\"group\":{\"hide\":[\"Offline_Sign_Prepare_Transaction\",\"Offline_Sign_Result\"],\"show\":[\"Offline_Sign_Sign_Transaction\"]}}",
+        "payloadType": "json",
+        "topic": "",
+        "x": 340,
+        "y": 580,
+        "wires": [
+            [
+                "f9568a2a.9aeee8",
+                "bcca718c.cbd0d"
+            ]
+        ]
+    },
+    {
+        "id": "21cc5746.a554e8",
+        "type": "ui_text_input",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "Secret",
+        "tooltip": "THE XRP SECRET ASSOCIATED WITH THE SOURCE ADDRESS",
+        "group": "fe392bb5.c564a8",
+        "order": 3,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "secret",
+        "x": 710,
+        "y": 720,
+        "wires": [
+            [
+                "911a50cc.0a873"
+            ]
+        ]
+    },
+    {
+        "id": "3d1856fc.77a58a",
+        "type": "ui_ui_control",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "x": 160,
+        "y": 100,
+        "wires": [
+            [
+                "1a1ba832.26d648"
+            ]
+        ]
+    },
+    {
+        "id": "d377bd9f.73ecc",
+        "type": "ui_text_input",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "Transaction Type*",
+        "tooltip": "DEFAULTS TO PAYMENT. IF YOU WISH TO USE OTHER TRANSACTION TYPES THEN OVERWRITE THE RAW TRANSACTION FIELD BELOW",
+        "group": "e16c55bb.a2d8b8",
+        "order": 8,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "TransactionType",
+        "x": 550,
+        "y": 360,
+        "wires": [
+            [
+                "338803ec.7a04dc"
+            ]
+        ]
+    },
+    {
+        "id": "a0219e9c.fbe45",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Ledger",
+        "func": "msg.payload = msg.payload.TransactionType;\nif (msg.payload == null) msg.payload = \"\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 360,
+        "wires": [
+            [
+                "d377bd9f.73ecc"
+            ]
+        ]
+    },
+    {
+        "id": "ab69852c.3e1078",
+        "type": "ui_switch",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "label": "Fully Canonical Signature?",
+        "tooltip": "AVOIDS MALICIOUS MODIFICATION OF YOUR TRANSACTION SIGNATURE..",
+        "group": "e16c55bb.a2d8b8",
+        "order": 9,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "decouple": "false",
+        "topic": "Flags",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 580,
+        "y": 520,
+        "wires": [
+            [
+                "5eb584d7.62903c"
+            ]
+        ]
+    },
+    {
+        "id": "5eb584d7.62903c",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Field",
+        "func": "var rawTransaction = flow.get(\"rawTransaction\");\n\nvar tfFullyCanonicalSig = 2147483648;\n\nif (msg.payload === false){\n    tfFullyCanonicalSig = 0;\n}\n\nrawTransaction.Flags = tfFullyCanonicalSig;\nflow.set(\"rawTransaction\", rawTransaction);\n\nmsg.payload = JSON.stringify(rawTransaction);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 780,
+        "y": 520,
+        "wires": [
+            [
+                "903e8a02.401c98"
+            ]
+        ]
+    },
+    {
+        "id": "5c641554.14788c",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set Default",
+        "func": "msg.payload = true;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 520,
+        "wires": [
+            [
+                "ab69852c.3e1078"
+            ]
+        ]
+    },
+    {
+        "id": "3e74e07a.0c6c2",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "Raw Trans In",
+        "links": [
+            "a1b58d87.a8ddc"
+        ],
+        "x": 35,
+        "y": 400,
+        "wires": [
+            [
+                "f5af87d9.785d78"
+            ]
+        ]
+    },
+    {
+        "id": "a1b58d87.a8ddc",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "Raw Trans Out",
+        "links": [
+            "3e74e07a.0c6c2"
+        ],
+        "x": 1175,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "17982711.9a7219",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "Trans Reset in",
+        "links": [
+            "dfff58d3.c55348"
+        ],
+        "x": 35,
+        "y": 360,
+        "wires": [
+            [
+                "f5af87d9.785d78"
+            ]
+        ]
+    },
+    {
+        "id": "dfff58d3.c55348",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "trans reset out",
+        "links": [
+            "17982711.9a7219"
+        ],
+        "x": 835,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "72c4ed75.d52874",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "Canonical Reset In",
+        "links": [
+            "ef4ca884.ff4a98"
+        ],
+        "x": 255,
+        "y": 520,
+        "wires": [
+            [
+                "5c641554.14788c"
+            ]
+        ]
+    },
+    {
+        "id": "ef4ca884.ff4a98",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "Canonical Reset Out",
+        "links": [
+            "72c4ed75.d52874"
+        ],
+        "x": 835,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "d5b4e090.a4225",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "Raw Trans Reset In ",
+        "links": [
+            "39a83e07.672e72"
+        ],
+        "x": 795,
+        "y": 320,
+        "wires": [
+            [
+                "903e8a02.401c98"
+            ]
+        ]
+    },
+    {
+        "id": "39a83e07.672e72",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "Raw Trans Reset Out",
+        "links": [
+            "d5b4e090.a4225"
+        ],
+        "x": 835,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "f9568a2a.9aeee8",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "UpdateUI Prepare Trans Out",
+        "links": [
+            "633578e.94d4688"
+        ],
+        "x": 475,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "633578e.94d4688",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "UpdateUI Prepare Trans In",
+        "links": [
+            "f9568a2a.9aeee8"
+        ],
+        "x": 35,
+        "y": 100,
+        "wires": [
+            [
+                "3d1856fc.77a58a"
+            ]
+        ]
+    },
+    {
+        "id": "a9b76cad.fbe6",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "UpdateUI Sign Out",
+        "links": [
+            "a17bbe1e.5e29e"
+        ],
+        "x": 975,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "a17bbe1e.5e29e",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "UpdateUI Sign In",
+        "links": [
+            "a9b76cad.fbe6"
+        ],
+        "x": 35,
+        "y": 60,
+        "wires": [
+            [
+                "3d1856fc.77a58a"
+            ]
+        ]
+    },
+    {
+        "id": "6de702ca.e9c15c",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "UpdateUI Clear In",
+        "links": [
+            "86271c95.f165"
+        ],
+        "x": 35,
+        "y": 140,
+        "wires": [
+            [
+                "3d1856fc.77a58a"
+            ]
+        ]
+    },
+    {
+        "id": "86271c95.f165",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "UpdateUI Clear Out",
+        "links": [
+            "6de702ca.e9c15c"
+        ],
+        "x": 715,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "2fa53d89.9b06e2",
+        "type": "comment",
+        "z": "5326a839.b07ce8",
+        "name": "Show/Hide UI",
+        "info": "",
+        "x": 170,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "77a7f7bc.d35cd8",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "Reset Result Out",
+        "links": [
+            "50095ab6.d21164"
+        ],
+        "x": 835,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "a1a46a5.2726c98",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "Reset QR In",
+        "links": [
+            "10214fa.7e345b"
+        ],
+        "x": 1295,
+        "y": 720,
+        "wires": [
+            [
+                "68c89c8.1a51264"
+            ]
+        ]
+    },
+    {
+        "id": "10214fa.7e345b",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "Reset QR Out",
+        "links": [
+            "a1a46a5.2726c98"
+        ],
+        "x": 835,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "50095ab6.d21164",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "Reset Result In",
+        "links": [
+            "77a7f7bc.d35cd8"
+        ],
+        "x": 895,
+        "y": 680,
+        "wires": [
+            [
+                "a505e134.dbc8"
+            ]
+        ]
+    },
+    {
+        "id": "65bc6c6a.0858f4",
+        "type": "comment",
+        "z": "5326a839.b07ce8",
+        "name": "Clear Down & Reset",
+        "info": "",
+        "x": 570,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "8398a16c.d7824",
+        "type": "comment",
+        "z": "5326a839.b07ce8",
+        "name": "Prepare Transaction Page",
+        "info": "",
+        "x": 130,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "f916a03e.6b257",
+        "type": "comment",
+        "z": "5326a839.b07ce8",
+        "name": "Sign Transaction Page",
+        "info": "",
+        "x": 120,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "bcca718c.cbd0d",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Show Transaction",
+        "func": "var rawTransaction = flow.get(\"rawTransaction\");\nmsg.payload = JSON.stringify(rawTransaction);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 550,
+        "y": 580,
+        "wires": [
+            [
+                "6dc0952d.1115fc"
+            ]
+        ]
+    },
+    {
+        "id": "4735f206.8accec",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Format Result",
+        "func": "var data;\nif (msg.payload.signedTX != null){\n    data = msg.payload.signedTX.signedTransaction;\n    msg.payload = {data: data};\n    return msg;\n}\nelse\n    return;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 800,
+        "y": 760,
+        "wires": [
+            [
+                "a505e134.dbc8",
+                "c8fdf623.460b68"
+            ]
+        ]
+    },
+    {
+        "id": "6dc0952d.1115fc",
+        "type": "ui_template",
+        "z": "5326a839.b07ce8",
+        "group": "fe392bb5.c564a8",
+        "name": "Prepared Transaction",
+        "order": 2,
+        "width": "24",
+        "height": "3",
+        "format": "<h3>Prepared Transaction:</h3>\n<div style='overflow-wrap: break-word;'>{{msg.payload}}</div>\n<br>\n<br>\n<h3>Sign Your Transaction:</h3>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 780,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4e0b18ca.aec9e8",
+        "type": "ui_template",
+        "z": "5326a839.b07ce8",
+        "group": "e16c55bb.a2d8b8",
+        "name": "Description",
+        "order": 1,
+        "width": "24",
+        "height": "1",
+        "format": "<div>Prepare your transaction for signature. This will default to a <b>Payment</b> transaction type, the fields below are all required to conduct an XRP payment. Hover over each field to get extra information. If you wish to prepare a different transaction type then edit the raw transaction field and ensure the transaction is <b>JSON</b> formated</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 90,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3a2d3a34.931f06",
+        "type": "ui_template",
+        "z": "5326a839.b07ce8",
+        "group": "fe392bb5.c564a8",
+        "name": "Description",
+        "order": 1,
+        "width": "24",
+        "height": "1",
+        "format": "<div>Sign your prepared transaction ready for submission to the XRP ledger. Check the prepared transaction then enter the secret for the initiating (FROM) account to sign your transaction.</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 90,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2d84aee.f9cbc52",
+        "type": "comment",
+        "z": "5326a839.b07ce8",
+        "name": "Result Page",
+        "info": "",
+        "x": 1030,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "5723b8e0.568538",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Check Result",
+        "func": "if(msg.payload.signedTX){\n    msg.payload.message = \"you have successfully signed your transaction. Copy the signed transaction below then submit to a rippled server using an online submission tool.\";\n}\nelse{\n    var error = msg.payload.toString();\n    msg.payload = {};\n    msg.payload.message = \"Signing your transaction has failed!. Go back and check the transaction fields are correct.\";\n    msg.payload.error = error;\n    \n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 790,
+        "y": 800,
+        "wires": [
+            [
+                "c3611f2d.722ec"
+            ]
+        ]
+    },
+    {
+        "id": "c3611f2d.722ec",
+        "type": "ui_template",
+        "z": "5326a839.b07ce8",
+        "group": "c29742f0.39742",
+        "name": "Description",
+        "order": 1,
+        "width": "24",
+        "height": "2",
+        "format": "<div ng-bind-html=\"msg.payload.message\"></div>\n<br><br>\n<div style=\"color:red;\" ng-bind-html=\"msg.payload.error\"></div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 1030,
+        "y": 800,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "37b6e548.b05a5a",
+        "type": "ui_template",
+        "z": "5326a839.b07ce8",
+        "group": "fe392bb5.c564a8",
+        "name": "Secret Missing",
+        "order": 5,
+        "width": "24",
+        "height": "2",
+        "format": "<div style=\"color:red !important;\" ng-bind-html=\"msg.error\"></div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 560,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "911a50cc.0a873",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Set secret",
+        "func": "flow.set(\"secret\",msg.payload);\nreturn;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 860,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2c278b15.eab444",
+        "type": "link out",
+        "z": "5326a839.b07ce8",
+        "name": "Reset Secret Error Out",
+        "links": [
+            "5715dbd4.f9a754"
+        ],
+        "x": 795,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "5715dbd4.f9a754",
+        "type": "link in",
+        "z": "5326a839.b07ce8",
+        "name": "Reset Secret Error In",
+        "links": [
+            "2c278b15.eab444"
+        ],
+        "x": 435,
+        "y": 860,
+        "wires": [
+            [
+                "37b6e548.b05a5a"
+            ]
+        ]
+    },
+    {
+        "id": "6c38762e.a7fe48",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "UI",
+        "func": "msg.payload = {\"group\":{\"hide\":[\"Offline_Sign_Sign_Transaction\",\"Offline_Sign_Prepare_Transaction\"],\"show\":[\"Offline_Sign_Result\"]}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 770,
+        "y": 840,
+        "wires": [
+            [
+                "a9b76cad.fbe6"
+            ]
+        ]
+    },
+    {
+        "id": "6e0ba6aa.de2208",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Reset secret",
+        "func": "flow.set(\"secret\",null);\nmsg.payload = \"\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 550,
+        "y": 720,
+        "wires": [
+            [
+                "21cc5746.a554e8"
+            ]
+        ]
+    },
+    {
+        "id": "b2f78961.d5ba38",
+        "type": "switch",
+        "z": "5326a839.b07ce8",
+        "name": "Validation Error?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "ValidationError",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 560,
+        "y": 760,
+        "wires": [
+            [
+                "b04c58d9.afe628"
+            ],
+            [
+                "6c38762e.a7fe48",
+                "5723b8e0.568538",
+                "4735f206.8accec"
+            ]
+        ]
+    },
+    {
+        "id": "b04c58d9.afe628",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Get Error",
+        "func": "msg.error = msg.payload.toString();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 540,
+        "y": 800,
+        "wires": [
+            [
+                "37b6e548.b05a5a"
+            ]
+        ]
+    },
+    {
+        "id": "1a1ba832.26d648",
+        "type": "switch",
+        "z": "5326a839.b07ce8",
+        "name": "New Connection?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "change",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 350,
+        "y": 100,
+        "wires": [
+            [
+                "ce5f7cdc.04ea4",
+                "b955c026.4b76"
+            ]
+        ]
+    },
+    {
+        "id": "b955c026.4b76",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "Reset",
+        "func": "msg.payload = {\"group\":{\"hide\":[\"Offline_Sign_Sign_Transaction\",\"Offline_Sign_Result\"],\"show\":[\"Offline_Sign_Prepare_Transaction\"]}};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 630,
+        "y": 140,
+        "wires": [
+            [
+                "86271c95.f165"
+            ]
+        ]
+    },
+    {
+        "id": "2209bb03.6cfb74",
+        "type": "ui_template",
+        "z": "5326a839.b07ce8",
+        "group": "2ec27063.ff418",
+        "name": "Add XRP Logo",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<script id=\"logoScript\" type=\"text/javascript\">\n    $(function() {\n        if($('.md-toolbar-tools').length != 0){\n            loadLogo();\n        }else setTimeout(loadLogo, 500)\n    });\n    \n    function loadLogo(){\n        $('#logo').remove();\n        var toolbar = $('.md-toolbar-tools');\n        \n        var l = $('<div id=\"logo\"  style=\"margin-left: 35vw;\"><svg width=\"109\" height=\"30\" viewBox=\"0 0 2499.1 698\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"#FFF\"><path d=\"m704.1 0h119.3l-248.3 251c-89.9 90.9-235.5 90.9-325.4 0l-248.2-251h119.3l188.6 190.7c56 56.9 147.6 57.6 204.5 1.6.5-.5 1.1-1.1 1.6-1.6zm-584.8 698h-119.3l249.8-252.6c89.9-90.9 235.5-90.9 325.4 0l249.7 252.6h-119.3l-190.1-192.2c-56-56.9-147.6-57.6-204.5-1.6-.5.5-1.1 1.1-1.6 1.6z\"/><path d=\"m2276.7 0h.1c30.5.6 59.1 6.6 85.7 18 27.1 10.7 50.9 25.6 71.2 44.6 20.5 19.1 36.5 41.6 48 67.4 11.6 25.4 17.4 52.3 17.4 80.7 0 29-6.1 56.6-18.4 82.6-11.5 25.3-27.9 47.7-48.9 67.3-20.4 19-44.6 34.2-72.2 45.5h-.1c-27.3 10.8-56.6 16.2-87.8 16.2h-260.4v273.3h-91.6v-695.6zm-5 338c18.4 0 35.8-3.3 52.3-9.9 16.7-6.6 31.2-15.7 43.6-27.3 12.4-11.5 22.3-25.2 29.3-40.6 7.1-15.3 10.6-31.8 10.6-49.5 0-17.1-3.5-33.3-10.6-48.6-7-15.3-17-29.1-29.3-40.6-12.4-11.6-26.9-20.6-43.6-27.3-16.5-6.6-33.9-9.9-52.3-9.9h-260.4v253.7z\"/><path d=\"m1254.2 423.8c45.9 0 89.4 19.4 118.2 52.8l189.2 219.1h117.8l-258.8-303.7c-28.8-33.8-72.5-53.5-118.8-53.5h-179.3v-253.1h260.4c18.4 0 35.8 3.3 52.3 9.9 16.7 6.7 31.2 15.8 43.6 27.3l.2.2c12.3 10.9 22 24 29.1 39.5 7.1 15.3 10.6 31.8 10.6 49.6 0 17.7-3.6 34.2-10.6 49.5-4.3 8.9-9.5 17.3-15.7 25l59.6 66.5c.7-.8 1.5-1.6 2.2-2.4 17.6-19 31.2-40.1 40.7-63.5 10.2-23.6 15.3-48.7 15.3-75.2 0-28.4-5.8-55.4-17.4-80.8-11.5-25.9-27.5-48.4-48-67.5-20.4-19-44.1-34.1-71.1-45.5-26.7-11.4-55.3-17.4-85.9-18h-311.3c-12.6 0-23.6 4.7-32.6 13.2-8.7 8.1-13.2 18.1-13.2 29.5v652.9h91.6v-271.8z\"/></g></svg></div>');\n\n        toolbar.append(l);\n    }\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "global",
+        "x": 1040,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "97d8c619.720868",
+        "type": "function",
+        "z": "5326a839.b07ce8",
+        "name": "To XRP",
+        "func": "msg.payload = (msg.payload * 100000).toString();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 720,
+        "y": 240,
+        "wires": [
+            [
+                "338803ec.7a04dc"
+            ]
+        ]
+    },
+    {
+        "id": "59467d90.fb04e4",
+        "type": "sign-transaction",
+        "z": "5326a839.b07ce8",
+        "name": "",
+        "txJSON": "",
+        "signAs": "",
+        "x": 350,
+        "y": 760,
+        "wires": [
+            [
+                "b2f78961.d5ba38"
+            ]
+        ]
+    },
+    {
+        "id": "c29742f0.39742",
+        "type": "ui_group",
+        "z": "",
+        "name": "Result",
+        "tab": "f7b86e70.34a07",
+        "order": 4,
+        "disp": true,
+        "width": "24",
+        "collapse": false
+    },
+    {
+        "id": "fe392bb5.c564a8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Sign Transaction",
+        "tab": "f7b86e70.34a07",
+        "order": 3,
+        "disp": true,
+        "width": "24",
+        "collapse": false
+    },
+    {
+        "id": "e16c55bb.a2d8b8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Prepare Transaction",
+        "tab": "f7b86e70.34a07",
+        "order": 2,
+        "disp": true,
+        "width": "24",
+        "collapse": false
+    },
+    {
+        "id": "2ec27063.ff418",
+        "type": "ui_group",
+        "z": "",
+        "name": "Util",
+        "tab": "f7b86e70.34a07",
+        "order": 1,
+        "disp": false,
+        "width": "24",
+        "collapse": false
+    },
+    {
+        "id": "f7b86e70.34a07",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Offline Sign",
+        "icon": "dashboard",
+        "order": 7,
+        "disabled": false,
+        "hidden": false
+    }
+]

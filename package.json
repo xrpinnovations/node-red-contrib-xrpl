@@ -1,15 +1,18 @@
 {
   "name": "node-red-contrib-xrpl",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Node-RED xrp ledger module",
   "dependencies": {
     "ripple-lib": "^1.2.3",
     "ripple-bip32": "^0.0.3",
     "bip39": "^3.0.2",
-    "qrcode": "^1.3.3"
+    "qrcode": "^1.3.3",
+    "@hapi/joi": "^15.1.0",
+    "selectn": "^1.1.2"
   },
   "devDependencies": {
-    "eslint": "*"
+    "eslint": "^5.16.0",
+    "eslint-config-google": "^0.13.0"
   },
   "repository": {
     "type": "git",
@@ -25,14 +28,13 @@
     "ripple",
     "crypto currency",
     "digital asset",
-    "automation"
+    "automation",
+    "#XRPtheStandard"
   ],
   "node-red": {
     "nodes": {
       "check valid address": "nodes/check-valid-address.js",
-      "get account": "nodes/get-account.js",
-      "get account transactions": "nodes/get-account-transactions.js",
-      "get transaction": "nodes/get-transaction.js",
+      "get information": "nodes/get-information.js",
       "send xrp": "nodes/send-xrp.js",
       "prepare transaction": "nodes/prepare-transaction.js",
       "sign transaction": "nodes/sign-transaction.js",
@@ -44,7 +46,18 @@
       "receive transaction": "nodes/receive-transaction.js",
       "prepare escrow creation": "nodes/prepare-escrow-creation.js",
       "prepare escrow cancellation": "nodes/prepare-escrow-cancellation.js",
-      "prepare escrow execution": "nodes/prepare-escrow-execution.js"
+      "prepare escrow execution": "nodes/prepare-escrow-execution.js",
+      "prepare payment": "nodes/prepare-payment.js",
+      "prepare settings": "nodes/prepare-settings.js",
+      "prepare order": "nodes/prepare-order.js",
+      "prepare order cancellation": "nodes/prepare-order-cancellation.js",
+      "prepare trustline": "nodes/prepare-trustline.js",
+      "prepare payment channel create": "nodes/prepare-payment-channel-create.js",
+      "prepare payment channel fund": "nodes/prepare-payment-channel-fund.js",
+      "prepare payment channel claim": "nodes/prepare-payment-channel-claim.js",
+      "sign payment channel claim": "nodes/sign-payment-channel-claim.js",
+      "verify payment channel claim": "nodes/verify-payment-channel-claim.js",
+      "combine signatures": "nodes/combine-signatures.js"
     }
   },
   "author": {

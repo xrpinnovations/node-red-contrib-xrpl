@@ -39,7 +39,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('check-valid-address',{
         category: 'XRPL',      // the palette category
-        color: '#c7e9c0',
+        color: "#d8bfd8", 
         defaults: {             // defines the editable properties of the node
             name: {value:""},   //  along with default values.
             address: {value:""}
@@ -47,7 +47,7 @@
         inputs:1,               // set the number of inputs - only 0 or 1
         outputs:1,              // set the number of outputs - 0 to n
         // set the icon (held in icons dir below where you save the node)
-        icon: "verify.png",     // saved in  icons/myicon.png
+        icon: "wallet.png",     // saved in  icons/myicon.png
         label: function() {     // sets the default label contents
             return this.name||"Check Valid XRP Address";
         },

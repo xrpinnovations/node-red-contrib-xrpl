@@ -2,71 +2,70 @@
 File:               sign-transaction.js
 Author:             Gazos <gazos@xrpi.io>
 Date:               02/04/19
-Last Modified Date: 28/05/19
+Last Modified Date: 30/06/19
 Last Modified By:   Gazos <gazos@xrpi.io>
 */
 
 // Import Dependencies
 const XRPLib = require('../lib/xrp');
+const BaseNode = require('../lib/base-node');
 
 module.exports = function(RED) {
-    "use strict";
+  'use strict';
 
-    // The main node definition - most things happen in here
-    function SignTransaction(n) {
-        // Create a RED node
-        RED.nodes.createNode(this,n);
+  const nodeOptions = {
+    config: {
+      txJSON: {},
+      signAs: {},
+    },
+  };
 
-        // copy "this" object in case we need it in context of callbacks of other functions.
-        var node = this;
-        // create a msg object
-        var msg = {};
-
-        // when an input is recieved
-        this.on('input', function (msg) {
-          var secret, txJSON;
-
-          if (this.credentials.secret != null){
-            if (XRPLib.isValidSecret(this.credentials.secret))
-              secret = this.credentials.secret;
-            else {
-              node.error("Secret invalid");
-              return;
-            }
-          }
-          else if (msg.payload.secret != null){
-            secret = msg.payload.secret;
-          }
-          else {
-            node.error("Secret missing");
-            return;
-          }
-          if (n.txjson != "") txJSON = n.txjson;
-          else txJSON = msg.payload.txJSON;
-
-          try {
-              msg.payload.signedTX = XRPLib.signTransaction(txJSON, secret);
-              this.send(msg);
-          } catch (e) {
-            msg.payload = e;
-            this.send(msg);
-          }
-
-        });
-
-        this.on("close", function() {
-            // Called when the node is shutdown - eg on redeploy.
-            // Allows ports to be closed, connections dropped etc.
-            // eg: node.client.disconnect();
-        });
+  class SignTransaction extends BaseNode {
+    constructor(nodeDefinition) {
+      super(nodeDefinition, RED, nodeOptions);
     }
 
-    // Register the node by name. This must be called before overriding any of the
-    // Node functions.
-    RED.nodes.registerType("sign-transaction", SignTransaction,{
-      credentials: {
-        secret: {type:"password"}
-      }
-    });
+    async onInput({parsedMessage, message}) {
+      const {
+        txJSON,
+        signAs,
+      } = parsedMessage;
 
-}
+      let credentials;
+
+      if (this.credentials.secret != null) {
+        credentials = this.credentials.secret;
+      } else if (message.payload.secret != null) {
+        credentials = message.payload.secret;
+      } else if (this.credentials.publicKey != null && this.credentials.privateKey != null) {
+        credentials = {publicKey: this.credentials.publicKey, privateKey: keypair.privateKey = this.credentials.privateKey};
+      } else if (message.payload.keypair != null) {
+        credentials = message.payload.keypair;
+      } else {
+        this.setStatusFailed('Secret or Keypair Missing');
+        this.error('Secret / Keypair Missing');
+        return;
+      }
+
+      try {
+        if (typeof message.payload !== 'object') message.payload = {txJSON: txJSON};
+        message.payload.signedTX = XRPLib.signTransaction(JSON.stringify(txJSON), credentials, signAs);
+        this.send(message);
+      } catch (error) {
+        this.setStatusFailed('Error');
+        this.error(error);
+        return;
+      }
+    }
+  }
+
+  // Register the node by name. This must be called before overriding any of the
+  // Node functions.
+  RED.nodes.registerType('sign-transaction', SignTransaction, {
+    credentials: {
+      secret: {type: 'password'},
+      publicKey: {type: 'password'},
+      privateKey: {type: 'password'},
+    },
+  });
+};

@@ -3,32 +3,75 @@
       <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
       <input type="text" id="node-input-name" placeholder="Name">
   </div>
-  <div class="form-row">
-      <label for="node-input-txjson"><i class="fa fa-tag"></i> Prepared Transaction</label>
-      <input type="text" id="node-input-txjson" placeholder="Prepared Transaction">
+  <div class="form-row" title="Transaction represented as a JSON string in rippled format.">
+      <label for="node-input-txJSON"><i class="fa fa-tag"></i> Prepared Transaction</label>
+      <input type="text" id="node-input-txJSON" placeholder="Prepared Transaction">
+      <input type="hidden" id="node-input-transactionType">
   </div>
-  <div class="form-row">
-      <label for="node-input-secret"><i class="fa fa-tag"></i> Secret or Keypair</label>
-      <input type="password" id="node-input-secret" placeholder="Used to sign the transaction">
+
+  <div class="form-row" title="Optional The account that the signature should count for in multisigning.">
+      <label for="node-input-signAs"><i class="fa fa-tag"></i> (Multi Sign) Sign As</label>
+      <input type="text" id="node-input-signAs" placeholder="XRP Address">
   </div>
+
+  <div class="form-row">
+    <h4>Credentials</h4>
+
+    <div class="form-row">
+        <h5>Secret</h5>
+        <div class="form-row" title="Optional The secret of the account that is initiating the transaction. (This field is exclusive with keypair)">
+            <label for="node-input-secret"><i class="fa fa-tag"></i> Secret</label>
+            <input type="password" id="node-input-secret" placeholder="Used to sign the transaction">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <h5>Or Keypair</h5>
+        <div class="form-row" title="The uppercase hexadecimal representation of the secp256k1 or Ed25519 private key.">
+            <label for="node-input-privateKey"><i class="fa fa-tag"></i> Private Key</label>
+            <input type="password" id="node-input-privateKey">
+        </div>
+        <div class="form-row" title="The uppercase hexadecimal representation of the secp256k1 or Ed25519 public key.">
+            <label for="node-input-publicKey"><i class="fa fa-tag"></i> Public Key</label>
+            <input type="password" id="node-input-publicKey">
+        </div>
+    </div>
+
+</div>
+
 </script>
 
 <script type="text/x-red" data-help-name="sign-transaction">
-  <p>This node is used to sign a prepared transaction
-    <a href='https://developers.ripple.com/rippleapi-reference.html#sign'>See XRP API</a>
+  <p>This node is used to sign a prepared transaction.
   <h3>Inputs</h3>
   <p>
     Set via <b>msg.payload</b>, or set within the node interface.
   </p>
    <dl class="message-properties">
-       <dt>transaction/ payload.transaction
+       <dt>payload.transaction
            <span class="property-type">JSON</span>
        </dt>
-       <dd> The prepared transation to be signed.</dd>
-       <dd> The amount of XRP to send.</dd>
-       <dt>secret / payload.secret
+       <dd> The prepared transaction to be signed as a JSON object</dd>
+
+       <dt>payload.signAs
            <span class="property-type">String</span>
        </dt>
+       <dd> Optional The account that the signature should count for in multisigning.</dd>
+
+       <dt>secret
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Optional The secret of the account that is initiating the transaction. (This field is exclusive with keypair).</dd>
+
+       <dt>privateKey
+           <span class="property-type">String</span>
+       </dt>
+       <dd> The uppercase hexadecimal representation of the secp256k1 or Ed25519 private key.</dd>
+
+       <dt>publicKey
+           <span class="property-type">String</span>
+       </dt>
+       <dd> The uppercase hexadecimal representation of the secp256k1 or Ed25519 public key.</dd>
    </dl>
 
   <h3>Output</h3>
@@ -46,6 +89,7 @@
        </dt>
        <dd> Contains any error messages.</dd>
    </dl>
+   <a href='https://xrpl.org/rippleapi-reference.html#sign'>See XRPL Docs</a>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
@@ -56,10 +100,13 @@
         color: "#c0deed",
         defaults: {             // defines the editable properties of the node
             name: {value:""},   //  along with default values.
-            txjson: {value:""}
+            txJSON: {value:"", required: false},
+            signAs: {value:""},
         },
         credentials: {
-           secret: {type:"password"}
+           secret: {type:"password"},
+           publicKey: {type:"password"},
+           privateKey: {type:"password"},
         },
         inputs:1,               // set the number of inputs - only 0 or 1
         outputs:1,              // set the number of outputs - 0 to n
@@ -70,6 +117,10 @@
         },
         labelStyle: function() { // sets the class to apply to the label
             return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            let node = this;
+            $("#node-input-txJSON").typedInput({ default: 'json', types: ['json'],  typeField: $("#node-input-transactionType")  });
         }
     });
 </script>

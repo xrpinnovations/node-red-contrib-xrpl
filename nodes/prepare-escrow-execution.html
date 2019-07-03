@@ -1,78 +1,385 @@
-<!--
-owner	address	The address of the owner of the escrow to execute.
-escrowSequence	sequence	The account sequence number of the Escrow Creation transaction for the escrow to execute.
-condition	string	Optional A hex value representing a PREIMAGE-SHA-256 crypto-condition . This must match the original condition from the escrow creation transaction.
-fulfillment	string	Optional A hex value representing the PREIMAGE-SHA-256 crypto-condition  fulfillment for condition.
-memos	memos	Optional Array of memos to attach to the transaction.
--->
 <script type="text/x-red" data-template-name="prepare-escrow-execution">
-  <div class="form-row">
-      <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
-      <input type="text" id="node-input-server">
+  <div class="form-row" title="Custom name to apply to this node">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
+    <input type="text" id="node-input-name" placeholder="Node Name">
   </div>
+
   <div class="form-row">
-      <label for="node-input-name"><i class="fa fa-tag"></i> Node Name</label>
-      <input type="text" id="node-input-name" placeholder="Node Name">
+    <h3>Transaction</h3>
   </div>
-  <div class="form-row">
-      <label for="node-input-address"><i class="fa fa-tag"></i> Address</label>
-      <input type="text" id="node-input-address" placeholder="XRP Address">
+  <div class="form-row" title="Which rippled server to connect to? Leaving blank defaults to offline mode">
+    <label for="node-input-server"><i class="fa fa-dot-circle-o"></i> Server</label>
+    <input type="text" id="node-input-server">
   </div>
-  <div class="form-row">
-      <label for="node-input-escrowSequence"><i class="fa fa-tag"></i> escrowSequence</label>
-      <input type="text" id="node-input-escrowSequence" placeholder="escrowSequence">
+  <div class="form-row" title="The address of the account that is creating the transaction.">
+    <label for="node-input-address"><i class="fa fa-tag"></i> Address</label>
+    <input type="text" id="node-input-address" placeholder="XRP Address">
   </div>
-  <div class="form-row">
-      <label for="node-input-condition"><i class="fa fa-tag"></i> Condition</label>
-      <input type="text" id="node-input-condition" placeholder="condition">
+
+  <!-- -------------------------------------------------------------- -->
+  <!-- Add EscrowExecution                                            -->
+  <!-- -------------------------------------------------------------- -->
+  
+  <div class="form-row" >
+    <h3>Escrow Execute</h3>
+
+    <div class="form-row" title="The address of the owner of the escrow to execute.">
+      <label for="owner"><i class="fa fa-tag"></i> Owner Account</label>
+      <input type="text" id="owner" placeholder="Owner account of the orginating Escrow">
+    </div>
+
+    <div class="form-row" title="The account sequence number of the Escrow Creation transaction for the escrow to execute.">
+      <label for="escrowSequence"><i class="fa fa-tag"></i> Escrow Sequence</label>
+      <input type="text" id="escrowSequence" placeholder="">
+    </div>
+
+    <div class="form-row" title="Optional A hex value representing a PREIMAGE-SHA-256 crypto-condition. This must match the original condition from the escrow creation transaction.">
+      <label for="condition"><i class="fa fa-tag"></i> Condition</label>
+      <input type="text" id="condition" placeholder="">
+    </div>
+
+    <div class="form-row" title="Optional A hex value representing the PREIMAGE-SHA-256 crypto-condition  fulfillment for condition.">
+      <label for="fulfillment"><i class="fa fa-tag"></i> Fulfillment</label>
+      <input type="text" id="fulfillment" placeholder="">
+    </div>
   </div>
-  <div class="form-row">
-      <label for="node-input-fulfillment"><i class="fa fa-tag"></i> fulfillment</label>
-      <input type="text" id="node-input-fulfillment" placeholder="fulfillment">
+
+  <!-- -------------------------------------------------------------- -->
+  <!-- Add Memos                                                      -->
+  <!-- -------------------------------------------------------------- -->
+  <div class="form-row" id="add-memo-container">
+      <h4>Add A Memo Field</h4>
+      <div>
+        <!-- Format Value -->
+        <div class="form-row" title="Optional Conventionally containing information on how the memo is encoded, for example as a MIME type . Only characters allowed in URLs are permitted.">
+          <label for="memo-format-value"><i class="fa fa-tag"></i> Format</label>
+          <input type="text" id="memo-format-value"/>
+        </div>
+
+        <!-- Type Value -->
+        <div class="form-row">
+          <label for="memo-type-value" title="Optional Conventionally, a unique relation (according to RFC 5988 ) that defines the format of this memo. Only characters allowed in URLs are permitted."><i class="fa fa-tag"></i> Type</label>
+          <input type="text" id="memo-type-value"/>
+        </div>
+
+        <!-- Data Value -->
+        <div class="form-row" title="Optional Arbitrary string, conventionally containing the content of the memo.">
+          <label for="memo-data-value"><i class="fa fa-tag"></i> Data</label>
+          <input type="text" id="memo-data-value"/>
+        </div>
+
+        <!-- Add Memo Button -->
+        <div class="form-row">
+          <button id="memo-add-btn" style="width: 100%">Add Memo</button>
+        </div>
+
+        <!-- Memo List -->
+        <div class="form-row">
+            <ol id="memo-list"></ol>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="form-row">
-      <label for="node-input-memos"><i class="fa fa-tag"></i> Memos</label>
-      <input type="text" id="node-input-memos" placeholder="memos">
+
+  <!-- -------------------------------------------------------------- -->
+  <!-- Add Instructions                                               -->
+  <!-- -------------------------------------------------------------- -->
+  <div class="form-row" id="add-instructions-container">
+    <h4>Add An Instruction</h4>
+    <div>
+      <!-- Fee Value -->
+      <div class="form-row" title="Optional An exact fee to pay for the transaction. See Transaction Fees for more information.">
+        <label for="instructions-fee"><i class="fa fa-tag"></i> Fee (Drops)</label>
+        <input type="text" id="instructions-fee"/>
+      </div>
+
+      <!-- Max Ledger Version Value -->
+      <div class="form-row" title="Optional The highest ledger version that the transaction can be included in. If this option and maxLedgerVersionOffset are both omitted, the maxLedgerVersion option will default to 3 greater than the current validated ledger version (equivalent to maxLedgerVersionOffset=3). Use null to not set a maximum ledger version.">
+        <label for="instructions-maxLedgerVersion"><i class="fa fa-tag"></i> Max Ledger Version</label>
+        <input type="text" id="instructions-maxLedgerVersion" />
+      </div>
+
+      <!-- Ma xLedger Version Offset Value -->
+      <div class="form-row" title="Optional Offset from current validated ledger version to highest ledger version that the transaction can be included in.">
+        <label for="instructions-maxLedgerVersionOffset"><i class="fa fa-tag"></i> Max Ledger Version Offset</label>
+        <input type="text" id="instructions-maxLedgerVersionOffset"/>
+      </div>
+
+      <!-- Sequence Value -->
+      <div class="form-row" title="Optional The initiating account's sequence number for this transaction.">
+        <label for="instructions-sequence"><i class="fa fa-tag"></i> Sequence</label>
+        <input type="text" id="instructions-sequence"/>
+      </div>
+
+      <!-- Signers Count Value -->
+      <div class="form-row" title="Optional Number of signers that will be signing this transaction.">
+        <label for="instructions-signersCount"><i class="fa fa-tag"></i> Signers Count</label>
+        <input type="text" id="instructions-signersCount"/>
+      </div>
+    </div>
   </div>
 </script>
 
 <script type="text/x-red" data-help-name="prepare-escrow-execution">
   <p>Prepare an escrow execution transaction. The prepared transaction must subsequently be signed and submitted.
-    <a href='https://developers.ripple.com/rippleapi-reference.html#prepareescrowexecution'>See XRP API</a>
-  <h3>Inputs</h3>
-  <p>
-    TODO
-  </p>
+    <h3>Inputs</h3>
+    <p>
+      Set via <b>msg.payload</b>, or set within the node interface.
+    </p>
+     <dl class="message-properties">
+       <dt class="optional">Name
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Custom name to apply to this node</dd>
 
-  <h3>Output</h3>
-  <p>TODO</p>
+       <dt class="optional">Server
+           <span class="property-type">Node</span>
+       </dt>
+       <dd> Which rippled server to connect to? Leaving blank defaults to offline mode</dd>
 
+       <dt>Address / payload.address
+           <span class="property-type">String</span>
+       </dt>
+       <dd> The address of the account that is creating the transaction</dd>
+
+       <dt>payload.escrowExecution
+           <span class="property-type">Object</span>
+       </dt>
+       <dd> The specification of the escrow execution to prepare.</dd>
+
+       <dt>Owner Address / payload.escrowExecution.owner
+           <span class="property-type">String</span>
+       </dt>
+       <dd> The address of the owner of the escrow to execute.</dd>
+
+       <dt>Escrow Sequence / payload.escrowExecution.escrowSequence
+           <span class="property-type">Integer</span>
+       </dt>
+       <dd> The account sequence number of the Escrow Creation transaction for the escrow to execute.</dd>
+
+       <dt>Condition / payload.escrowExecution.condition
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Optional A hex value representing a PREIMAGE-SHA-256 crypto-condition . This must match the original condition from the escrow creation transaction.</dd>
+
+       <dt>fulfillment / payload.escrowExecution.fulfillment
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Optional A hex value representing the PREIMAGE-SHA-256 crypto-condition  fulfillment for condition.</dd>
+
+       <dt class="optional">payload.escrowExecution.memos
+           <span class="property-type">JSON Array</span>
+       </dt>
+       <dd> Optional Array of memos to attach to the transaction.</dd>
+
+       <dt class="optional">Memos Data / payload.escrowExecution.memos.[{data}]
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Optional Arbitrary string, conventionally containing the content of the memo.</dd>
+
+       <dt class="optional">Memos Format / payload.escrowExecution.memos.[{format}]
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Optional Conventionally containing information on how the memo is encoded, for example as a MIME type . Only characters allowed in URLs are permitted.</dd>
+
+       <dt class="optional">Memos Type / payload.escrowExecution.memos.[{type}]
+           <span class="property-type">String</span>
+       </dt>
+       <dd> Optional Conventionally, a unique relation (according to RFC 5988 ) that defines the format of this memo. Only characters allowed in URLs are permitted.</dd>
+
+       <dt class="optional">payload.instructions
+           <span class="property-type">JSON</span>
+       </dt>
+       <dd> The instructions to be set. Defaults are used if not set.<br><code>Note</code> If used in offline mode you must specify the fee, sequence, and maxLedgerVersion parameters in the transaction instructions.</dd>
+
+       <dt class="optional">Fee / payload.instructions.fee
+           <span class="property-type">Float</span>
+       </dt>
+       <dd> Optional An exact fee to pay for the transaction. See Transaction Fees for more information.</dd>
+
+       <dt class="optional">Max Ledger Version / payload.instructions.maxLedgerVersion
+           <span class="property-type">Integer</span>
+       </dt>
+       <dd> Optional The highest ledger version that the transaction can be included in. If this option and maxLedgerVersionOffset are both omitted, the maxLedgerVersion option will default to 3 greater than the current validated ledger version (equivalent to maxLedgerVersionOffset=3). Use null to not set a maximum ledger version.</dd>
+
+       <dt class="optional">Max Ledger Version Offset / payload.instructions.maxLedgerVersionOffset
+           <span class="property-type">Integer</span>
+       </dt>
+       <dd> Optional Offset from current validated ledger version to highest ledger version that the transaction can be included in.</dd>
+
+       <dt class="optional">Sequence / payload.instructions.sequence
+           <span class="property-type">Integer</span>
+       </dt>
+       <dd> Optional The initiating account's sequence number for this transaction.</dd>
+
+       <dt class="optional">Signers Count / payload.instructions.signersCount
+           <span class="property-type">Integer</span>
+       </dt>
+       <dd> Optional Number of signers that will be signing this transaction.</dd>
+     </dl>
+
+    <h3>Output</h3>
+     <dl class="message-properties">
+         <dt>payload
+             <span class="property-type">Object</span>
+         </dt>
+         <dd> Contains further objects if successfull.</dd>
+
+         <dt>payload.txJSON
+             <span class="property-type">Object</span>
+         </dt>
+         <dd> Contains the prepared transaction</dd>
+
+         <dt>payload.instructions
+             <span class="property-type">Object</span>
+         </dt>
+         <dd> The instructions for how to execute the transaction after adding automatic defaults.</dd>
+
+         <dt>error
+             <span class="property-type">String</span>
+         </dt>
+         <dd> Contains any error messages.</dd>
+     </dl>
+     <h3>Reference</h3>
+     <ul>
+       <li><a href='https://xrpl.org/rippleapi-reference.html#prepareescrowexecution'>See XRPL Docs</a></li>
+     </ul>
 </script>
 
 <!-- Finally, the node type is registered along with all of its properties   -->
-<!-- The example below shows a small subset of the properties that can be set-->
 <script type="text/javascript">
-    RED.nodes.registerType('prepare-escrow-execution',{
-      category: 'XRPL Advanced',      // the palette category
-      color: "#e2d96e",
-        defaults: {             // defines the editable properties of the node
-            name: {value:""},
-            address: {value:""},
-            server: {value:"", type:"get-server"},
-            escrowSequence: {value:""},
-            condition: {value:""},
-            fulfillment: {value:""},
-            memos: {value:""}
+  RED.nodes.registerType('prepare-escrow-execution',{
+    category: 'XRPL Advanced',      // the palette category
+    color: "#e2d96e",
+    defaults: {             // defines the editable properties of the node
+      name: {value:""},
+      address: {value:""},
+      server: {value:"", type:"get-server", required: false},
+      escrowExecution: {value:{}},
+      instructions: {value:{}}
+    },
+    inputs:1,               // set the number of inputs - only 0 or 1
+    outputs:1,              // set the number of outputs - 0 to n
+    // set the icon (held in icons dir below where you save the node)
+    icon: "execute.png",     // saved in  icons/myicon.png
+    label: function() {     // sets the default label contents
+        return this.name||"Prepare Escrow Execution";
+    },
+    labelStyle: function() { // sets the class to apply to the label
+        return this.name?"node_label_italic":"";
+    },
+    oneditprepare: function() {
+      let node = this;
+      const $accordionMemo = $("#add-memo-container");
+      const $accordionInstructions = $("#add-instructions-container");
+
+      const $memos = {
+        list: $("#memo-list"),
+        addBtn: $("#memo-add-btn"),
+
+        data: $("#memo-data-value"),
+        format: $("#memo-format-value"),
+        type: $("#memo-type-value")
+      };
+
+      // **************************
+      // * Add Memos
+      // **************************
+      const memosHandler = {
+        onAddMemoButton: function(e) {
+          const memo = {
+            data: $memos.data.val(),
+            format: $memos.format.val(),
+            type: $memos.type.val()
+          };
+
+          $memos.list.editableList("addItem", memo);
+          $memos.data.val("");
+          $memos.format.val("");
+          $memos.type.val("");
         },
-        inputs:1,               // set the number of inputs - only 0 or 1
-        outputs:1,              // set the number of outputs - 0 to n
-        // set the icon (held in icons dir below where you save the node)
-        icon: "execute.png",     // saved in  icons/myicon.png
-        label: function() {     // sets the default label contents
-            return this.name||"Prepare Escrow Execution";
-        },
-        labelStyle: function() { // sets the class to apply to the label
-            return this.name?"node_label_italic":"";
+        onEditableListAdd: function(row, index, value) {
+          const $row = $(row);
+          const {
+            type,
+            format,
+            data
+          } = value;
+
+          const rowHtml = `<b>Format:</b>&nbsp;${format}<br>
+          <b>Type:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${type}<br>
+          <b>Data:</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${data}`;
+          $row.html(rowHtml);
         }
-    });
+      };
+
+      $memos.addBtn.on("click", memosHandler.onAddMemoButton);
+
+      // Memos List
+      $memos.list.editableList({
+        addButton: false,
+        height: 100,
+        sortable: true,
+        removable: true,
+        addItem: memosHandler.onEditableListAdd
+      });
+
+      // **************************
+      // * General Init
+      // **************************
+      $accordionMemo.accordion({
+        active: true,
+        collapsible: true,
+        heightStyle: "content"
+      });
+      $accordionInstructions.accordion({
+        active: true,
+        collapsible: true,
+        heightStyle: "content"
+      });
+
+      // Add previous memos to editable lists
+      node.escrowExecution.memos.forEach(c =>
+        $memos.list.editableList("addItem", c)
+      );
+
+      $('#owner').val(node.escrowExecution.owner);
+      $('#escrowSequence').val(node.escrowExecution.escrowSequence);
+      $('#condition').val(node.escrowExecution.condition);
+      $('#fulfillment').val(node.escrowExecution.fulfillment);
+
+      $("#instructions-fee").val(node.instructions.fee);
+      $("#instructions-maxFee").val(node.instructions.maxFee);
+      $("#instructions-maxLedgerVersion").val(node.instructions.maxLedgerVersion);
+      $("#instructions-maxLedgerVersion").val(node.instructions.maxLedgerVersion);
+      $("#instructions-maxLedgerVersionOffset").val(node.instructions.maxLedgerVersionOffset);
+      $("#instructions-sequence").val(node.instructions.sequence);
+      $("#instructions-signersCount").val(node.instructions.signersCount);
+
+    },
+    oneditsave: function() {
+      const $memosList = $("#memo-list");
+
+      // Compile Memos
+      const nodeMemos = [];
+      const listMemos = $memosList.editableList("items");
+      listMemos.each(function(i) {
+        nodeMemos.push($(this).data("data"));
+      });
+      this.escrowExecution.memos = nodeMemos;
+
+      this.escrowExecution.owner = $('#owner').val();
+      this.escrowExecution.escrowSequence = $('#escrowSequence').val();
+      this.escrowExecution.condition = $('#condition').val();
+      this.escrowExecution.fulfillment = $('#fulfillment').val();
+
+      this.instructions.fee = $("#instructions-fee").val();
+      this.instructions.maxFee = $("#instructions-maxFee").val();
+      this.instructions.maxLedgerVersion = $("#instructions-maxLedgerVersion").val();
+      this.instructions.maxLedgerVersion = $("#instructions-maxLedgerVersion").val();
+      this.instructions.maxLedgerVersionOffset = $("#instructions-maxLedgerVersionOffset").val();
+      this.instructions.sequence = $("#instructions-sequence").val();
+      this.instructions.signersCount = $("#instructions-signersCount").val();
+    }
+  });
 </script>

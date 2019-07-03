@@ -8,44 +8,128 @@
         <input type="checkbox" checked id="node-config-input-testnet" placeholder="Use TestNet?">
     </div>
     <div class="form-row">
-        <label for="node-config-input-subscribe"><i class="fa fa-tag"></i> Subscribe to Addresses (Array)</label>
-        <input type="text" id="node-config-input-subscribe" placeholder="">
+        <label for="node-config-input-overideServerAddress"><i class="fa fa-tag"></i> Use custom rippled server address?</label>
+        <input type="input" id="node-config-input-overideServerAddress" placeholder="wss://?">
+    </div>
+
+    <!-- -------------------------------------------------------------- -->
+    <!-- Add Addresses                                                  -->
+    <!-- -------------------------------------------------------------- -->
+    <div class="form-row" id="add-address-container">
+        <h5>Subscribe to XRP Address Transactions</h5>
+        <div>
+            <!-- Add Address Button -->
+            <div class="form-row">
+                <label for="address-value"><i class="fa fa-tag"></i> XRP Address</label>
+                <input type="text" id="address-value">
+            </div>
+
+            <!-- Add Address Button -->
+            <div class="form-row">
+                <button id="address-add-btn" style="width: 100%">Add Address</button>
+            </div>
+
+            <!-- Address List -->
+            <div class="form-row">
+                <ol id="address-list"></ol>
+            </div>
+        </div>
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="get-server">
-  <!-- data-help-name identifies the node type this help is for             -->
-  <!-- This content appears in the Info sidebar when a node is selected     -->
-  <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
-  <!-- node in the palette.                                                 -->
-  <p>This node queries the XRP ledger for the summary information of an XRP account</p>
   <h3>Input</h3>
-   <p>
-     Input can either be recieved as an object via <b>msg.payload</b>, or set within the node interface.
-   </p>
-   <ul>
-     <li> <b>TestNet / msg.payload.testnet</b> : [Boolean] If set to True then the test network will be used for the query.</li>
-   </ul>
-  <h3>Output</h3>
-   <p><b>msg</b>. An object containing either of the following:</p>
-   <ul>
-     <li> <b>msg.payload</b>. [Object] Containing the XRP account information</li>
-     <li> <b>msg.error</b>. [String] Contains any error messages. </li>
-   </ul>
+  <dl class="message-properties">
+        <dt class="optional">Node Name
+            <span class="property-type">String</span>
+        </dt>
+        <dd> Custom name to assign to the server settings</dd>
+
+        <dt class="optional">Use TestNet?
+            <span class="property-type">Boolean</span>
+        </dt>
+        <dd> Use the default testnet server?</dd>
+
+        <dt class="optional">Use custom rippled server address?
+            <span class="property-type">String</span>
+        </dt>
+        <dd> Use a custom rippled server instead of the default ripple ones</dd>
+
+        <dt class="optional">Subscribe to Addresses
+            <span class="property-type">Array</span>
+        </dt>
+        <dd> Add an array of XRP addresses to monitor. Seperate addresses by using commas (,)</dd>
+    </dl>
 </script>
 
-<!-- Finally, the node type is registered along with all of its properties   -->
-<!-- The example below shows a small subset of the properties that can be set-->
 <script type="text/javascript">
     RED.nodes.registerType('get-server',{
     category: "config",      // the palette category
-        defaults: {             // defines the editable properties of the node
-            name: {value:""},   //  along with default values.
-            subscribe: {value:[]},   //  along with default values.
-            testnet: {value:true}
+    defaults: {             // defines the editable properties of the node
+        name: {value:""},   //  along with default values.
+        subscribe: {value:[]},   //  along with default values.
+        testnet: {value:true},
+        overideServerAddress: {value:null}
+    },
+    label: function() {
+        return this.name || this.url;
+    },
+    oneditprepare: function() {
+      let node = this;
+
+      const $addresses = {
+        list: $("#address-list"),
+        addBtn: $("#address-add-btn"),
+
+        address: $("#address-value")
+      };
+
+      // **************************
+      // * Add Addresses
+      // **************************
+      const addressesHandler = {
+        onAddAddressButton: function(e) {
+          address = $addresses.address.val();
+
+          $addresses.list.editableList("addItem", address);
+          $addresses.address.val("");
         },
-        label: function() {
-          return this.name || this.url;
-        },
-    });
+        onEditableListAdd: function(row, index, value) {
+          const $row = $(row);
+          const rowHtml = `<b>Address:</b>&nbsp;${value}`;
+          $row.html(rowHtml);
+        }
+      };
+
+      $addresses.addBtn.on("click", addressesHandler.onAddAddressButton);
+
+      // Addresses List
+      $addresses.list.editableList({
+        addButton: false,
+        height: 100,
+        sortable: true,
+        removable: true,
+        addItem: addressesHandler.onEditableListAdd
+      });
+
+
+      // Add previous adresses to editable lists
+      node.subscribe.forEach(c =>
+        $addresses.list.editableList("addItem", c)
+      );
+    },
+    oneditsave: function() {
+      const $addressesList = $("#address-list");
+
+      // Compile Addresses
+      const nodeAddresses = [];
+      const listAddresses = $addressesList.editableList("items");
+      listAddresses.each(function(i) {
+        nodeAddresses.push($(this).data("data"));
+      });
+
+      this.subscribe = nodeAddresses;
+    }
+
+  });
 </script>
