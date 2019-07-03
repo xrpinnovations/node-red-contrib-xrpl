@@ -2,7 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-<<<<<<< HEAD
 ## [0.2.0] 2017-03-07
 
 ### Notes
@@ -91,8 +90,6 @@ All notable changes to this project will be documented in this file.
 ## [0.1.3]
 
 ### Changed
-=======
-<a name="0.1.4"></a>
 
 ### Improvements
 
@@ -101,6 +98,5 @@ All notable changes to this project will be documented in this file.
 <a name="0.1.3"></a>
 
 ### Improvements
->>>>>>> f838fe6027e13921294fc39a5468b08b2581f54e
 
 - **generate-qrcode.js** Improved scanning efficiency
