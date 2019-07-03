@@ -102,14 +102,16 @@ These are exciting times!
 A special thanks to <b>WietseWind and the guys at XRL Labs</b> for the recent support and their awesome tools.
 
 #### Still to do  
-* [ ] Test, Test, Test
-* [ ] Choose custom servers
-* [ ] Check outputs are consistent
 * [ ] Add images / videos
 * [ ] Add example flows  
-* [x] Add node status to receiver node  
-* [ ] Tidy up node descriptions  
 * [ ] Tidy up icons
+
+#### Done see changelog
+* [x] Test, Test, Test
+* [x] Choose custom servers
+* [x] Check outputs are consistent
+* [x] Add node status to receiver node  
+* [x] Tidy up node descriptions  
 
 #### Legal Notice
 This software is provided free of charge and used at your own risk. XRP Innovations cannot be held accountable or responsible for any loss or damage caused by this software.
