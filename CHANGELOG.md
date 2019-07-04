@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] 2017-04-07
+
+### Changed
+- nodes/get-server.js - Bugfix on subscribe list generating account malformed error on empty subscription
+
 ## [0.2.0] 2017-03-07
 
 ### Notes
