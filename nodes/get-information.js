@@ -46,18 +46,27 @@ module.exports = function(RED) {
 
       if (selection !== 'parseAccountFlags' && this.api.isConnected()) {
         if (selectionType == 'account') {
-          XRPLib.getAccountInformation(this.api, address, selection, options, orderBook).then((response) => this.send({payload: response})).catch((error)=> {
+          XRPLib.getAccountInformation(this.api, address, selection, options, orderBook).then((response) => {
+            message.payload = response;
+            this.send(message);
+          }).catch((error)=> {
             this.setStatusFailed('Error');
-            this.send({payload: error});
+            message.payload = error;
+            this.send(message);
           });
         } else if (selectionType == 'ledger') {
-          XRPLib.getLedgerInformation(this.api, selection, uid, options, pathfind).then((response) => this.send({payload: response})).catch((error)=> {
+          XRPLib.getLedgerInformation(this.api, selection, uid, options, pathfind).then((response) => {
+            message.payload = response;
+            this.send(message);
+          }).catch((error)=> {
             this.setStatusFailed('Error');
-            this.send({payload: error});
+            message.payload = error;
+            this.send(message);
           });
         }
       } else if (selection === 'parseAccountFlags') {
-        this.send({payload: XRPLib.parseAccountFlags(number)});
+        message.payload = XRPLib.parseAccountFlags(number);
+        this.send(message);
       } else {
         this.setStatusFailed('Error, Disconnected');
         this.warn('Error, Disconnected from RippleAPI');

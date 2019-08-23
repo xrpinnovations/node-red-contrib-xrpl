@@ -2,7 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.2.0] 2017-03-07
+## [0.2.3] 2019-23-08
+
+### Changed
+- nodes/get-information.js - Re-included input message to allow for debugging and carry on of information
+
+## [0.2.2] 2019-04-07
+
+### Changed
+- nodes/get-information.html - Improved efficiency
+
+## [0.2.1] 2019-04-07
+
+### Changed
+- nodes/get-server.js - Bugfix on subscribe list generating account malformed error on empty subscription
+
+## [0.2.0] 2019-03-07
 
 ### Notes
 - Big Release, all nodes rebased to inherit from a base node sharing common features and code
