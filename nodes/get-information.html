@@ -54,7 +54,37 @@
     const types = {
         account:{
             accountInfo:{desc:'Information',children:[{name:'address',desc:'Address',type:'text'}]},
-            transactions:{desc:'Transactions',children:[{name:'address',desc:'Address',type:'text'}]},
+            transactions:{desc:'Transactions',
+            children:[
+                {name:'address',desc:'Address',type:'text'},
+                {name:'options',desc:'Options',type:'object', children:[
+                    {name:'binary',desc:'Binary',type:'boolean'},
+                    {name:'counterparty',desc:'Counter Party',type:'text'},
+                    {name:'earliestFirst',desc:'Earliest First',type:'boolean'},
+                    {name:'excludeFailures',desc:'Exclude Failures',type:'boolean'},
+                    {name:'initiated',desc:'Initiated',type:'boolean'},
+                    {name:'limit',desc:'Limit',type:'text'},
+                    {name:'maxLedgerVersion',desc:'Max Ledger Version',type:'text'},
+                    {name:'minLedgerVersion',desc:'Min Ledger Version',type:'text'},
+                    {name:'start',desc:'Start',type:'text'},
+                    {name:'types',desc:'Types',type:'dropdown',options:[
+                        'payment',
+                        'order',
+                        'orderCancellation',
+                        'trustline',
+                        'settings',
+                        'escrowCreation',
+                        'escrowCancellation',
+                        'escrowExecution',
+                        'checkCreate',
+                        'checkCancel',
+                        'checkCash',
+                        'paymentChannelCreate',
+                        'paymentChannelFund',
+                        'paymentChannelClaim'
+                    ]}
+                ]},
+            ]},
             accountObjects:{desc:'Objects',children:[{name:'address',desc:'Address',type:'text'}]},
             balances:{desc:'Balances',children:[{name:'address',desc:'Address',type:'text'}]},
             balanceSheet:{desc:'Balance Sheet',children:[{name:'address',desc:'Address',type:'text'}]},
@@ -106,40 +136,90 @@
             var previousOptions = node.options;
             $( '#node-input-selectionType' ).change(function() {
                 $("#node-input-selection").empty();
-                Object.entries(types).forEach(entry => {
-                    let key = entry[0];
-                    let value = entry[1];
-                    if ($( '#node-input-selectionType' ).val() == key){
-                        Object.entries(value).forEach(childEntry => {
-                            var o = new Option(childEntry[1].desc, childEntry[0]);
-                            $(o).html(childEntry[1].desc);
-                            $("#node-input-selection").append(o);
-                        });
-                        $( '#node-input-selection' ).val(previousSelection);
-                    }
+                var selectionType = types[$( '#node-input-selectionType' ).val()];
+                Object.entries(selectionType).forEach(childEntry => {
+                    var o = new Option(childEntry[1].desc, childEntry[0]);
+                    $(o).html(childEntry[1].desc);
+                    $("#node-input-selection").append(o);
                 });
+                $( '#node-input-selection' ).val(previousSelection);
             });
 
             $( '#node-input-selection' ).change(function() {
                 $('#options').empty();
-                Object.entries(types).forEach(entry => {
-                    let key = entry[0];
-                    let value = entry[1];
-                    if ($( '#node-input-selectionType' ).val() == key){
-                        Object.entries(value).forEach(childEntry => { 
-                            let childKey = childEntry[0];
-                            let childValue = childEntry[1];
-                            if ($( '#node-input-selection' ).val() == childKey && childValue.children){
-                                for (const childEntity of childValue.children) {
-                                    var value = node[childEntity.name] ? node[childEntity.name] : '';
-                                    $('#options').append('<div class="form-row"><label for="node-input-'+childEntity.name+'"><i class="fa fa-tag"></i> '+childEntity.desc+'</label><input type="'+childEntity.type+'" id="node-input-'+childEntity.name+'" value='+value+'></div>');
+                var selectionType = types[$( '#node-input-selectionType' ).val()];
+                var selection = selectionType[$( '#node-input-selection' ).val()];
+                    if (selection && selection.children){
+                        for (const childEntity of selection.children) {
+                            var value = node[childEntity.name] ? node[childEntity.name] : '';
+
+                            if (childEntity.children){
+                                $('#options').append('<h4>' + childEntity.desc + '</h4>');
+
+                                for (const child of childEntity.children){
+                                    var childValue = '';
+                                    if (node[childEntity.name] && node[childEntity.name][child.name]){
+                                        childValue = node[childEntity.name][child.name];
+                                    }
+
+                                    var dropDownHtml = '<div class="form-row"><label for="options-'+child.name+'"><i class="fa fa-tag"></i> '+child.desc+'</label>';
+
+                                    switch (child.type) {
+                                        case 'boolean':
+                                            dropDownHtml = dropDownHtml + '<select id="options-'+child.name+'"><option value=""></option>' +
+                                            '<option value="false"' + (childValue == "false" ? 'Selected' : '') + '>False</option>' +
+                                            '<option value="true"' + (childValue == "true" ? 'Selected' : '') + '>True</option>';
+                                            
+                                            dropDownHtml = dropDownHtml + '</select></div>';
+                                            $( '#options' ).append(
+                                                dropDownHtml
+                                            );
+                                            break;
+                                        case 'text':
+                                            $( '#options' ).append(
+                                                '<div class="form-row"><label for="options-'+child.name+'"><i class="fa fa-tag"></i> '+child.desc+
+                                                    '</label><input type="'+child.type+'" id="options-'+child.name+'" value='+childValue+'></div>'
+                                            );
+                                            break;  
+                                        case 'dropdown':
+                                                dropDownHtml = dropDownHtml + '<select id="options-'+child.name+'" multiple><option value=""></option>';
+                                            for (const option of child.options){
+                                                dropDownHtml = dropDownHtml + '<option value="'+option+'"' + (childValue == option ? 'Selected' : '') + '>'+option+'</option>';
+                                            }
+                                            dropDownHtml = dropDownHtml + '</select></div>';
+                                            $( '#options' ).append(
+                                                dropDownHtml
+                                            );
+                                            break; 
+                                            
+                                        default:
+                                            break;
+                                    }
                                 }
                             }
-                        });
+                            else $('#options').append('<div class="form-row"><label for="node-input-'+childEntity.name+'"><i class="fa fa-tag"></i> '+childEntity.desc+'</label><input type="'+childEntity.type+'" id="node-input-'+childEntity.name+'" value='+value+'></div>');
+                        }
                     }
                 });
-            });
             $( '#node-input-selectionType' ).val(node.selectionType);
-         }
-      });
+         },
+         oneditsave: function() {
+            var node = this;
+            node.options = { };
+
+            var opts = $( "[id^='options-']" );
+
+            opts.each(function( index ) {
+                var optionID = $( this ).attr('id').split('-')[1];
+                var val = $( this ).val();
+                var valOption = $( '#' + optionID + ' option:selected').val();
+
+                if (val != ''){                   
+                    if (val == "true") node.options[optionID] = true;
+                    else if (val == "false") node.options[optionID] = true;
+                    else node.options[optionID] = val;
+                }
+            });
+        }
+    });
 </script>
