@@ -60,7 +60,7 @@ module.exports = function(RED) {
       }
 
       this.api.connect().then((resp) => {
-        if (this.subscribe) {
+        if (this.subscribe !== undefined && this.subscribe.length > 0) {
           try {
             for (const account of this.subscribe) {
               if (!this.api.isValidAddress(account.trim())) {
