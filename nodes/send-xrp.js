@@ -76,30 +76,30 @@ module.exports = function(RED) {
                   this.send(message);
                 }).catch((error) => {
                   this.setStatusFailed('Error');
-                  this.error(error);
+                  this.error(error, message);
                 });
               };
               checkTransaction().catch((error) => {
                 this.setStatusFailed('Error');
-                this.error(error);
+                this.error(error, message);
               });
             } else {
               this.send(message);
             }
           }).catch((error) => {
             this.setStatusFailed('Error');
-            this.error(error);
+            this.error(error, message);
             return;
           });
         } catch (error) {
           this.setStatusFailed('Error');
-          this.error(error);
+          this.error(error, message);
           return;
         }
       })
           .catch((error)=>{
             this.setStatusFailed('Error');
-            this.error(error);
+            this.error(error, message);
             return;
           });
     }

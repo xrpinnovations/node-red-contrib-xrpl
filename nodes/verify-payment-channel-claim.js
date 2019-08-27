@@ -33,7 +33,7 @@ module.exports = function(RED) {
         this.send({payload: XRPLib.verifyPaymentChannelClaim(verifyPaymentChannelClaim)});
       } catch (error) {
         this.setStatusFailed('Error');
-        this.error(error);
+        this.error(error, message);
         return;
       }
     }

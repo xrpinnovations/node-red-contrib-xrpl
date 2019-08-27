@@ -34,7 +34,7 @@ module.exports = function(RED) {
         this.send({payload: {signedTX: XRPLib.combineSignatures(signedTransactions)}});
       } catch (error) {
         this.setStatusFailed('Error');
-        this.error(error);
+        this.error(error, message);
         return;
       }
     }

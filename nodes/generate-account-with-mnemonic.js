@@ -36,7 +36,7 @@ module.exports = function(RED) {
         });
       } catch (error) {
         this.setStatusFailed('Error');
-        this.warn(error);
+        this.error(error, message);
         return;
       }
     }

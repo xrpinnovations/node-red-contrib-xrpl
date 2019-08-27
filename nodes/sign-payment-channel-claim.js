@@ -37,7 +37,7 @@ module.exports = function(RED) {
         privateKey = message.payload.privateKey;
       } else {
         this.setStatusFailed('Private Key Missing');
-        this.error('Private Key Missing');
+        this.error('Private Key Missing', message);
         return;
       }
 
@@ -47,7 +47,7 @@ module.exports = function(RED) {
         this.send({payload: XRPLib.signPaymentChannelClaim(signPaymentChannelClaim)});
       } catch (error) {
         this.setStatusFailed('Error');
-        this.error(error);
+        this.error(error, message);
         return;
       }
     }

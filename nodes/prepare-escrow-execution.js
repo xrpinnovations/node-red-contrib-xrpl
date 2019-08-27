@@ -38,7 +38,7 @@ module.exports = function(RED) {
       })
           .catch((error)=>{
             this.setStatusFailed('Error');
-            this.error(error);
+            this.error(error, message);
             return;
           });
     }

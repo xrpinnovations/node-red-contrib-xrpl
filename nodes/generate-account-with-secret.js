@@ -27,7 +27,7 @@ module.exports = function(RED) {
       if (secret != null) {
         if (!XRPLib.isValidSecret(this.credentials.secret)) {
           this.setStatusFailed('Secret invalid');
-          this.error('Secret invalid');
+          this.error('Secret invalid', message);
           return;
         }
       }
@@ -36,7 +36,7 @@ module.exports = function(RED) {
         this.send({payload: XRPLib.generateAccoutWithSecret(secret)});
       } catch (error) {
         this.setStatusFailed('Secret error');
-        this.error(error);
+        this.error(error, message);
         return;
       }
     };

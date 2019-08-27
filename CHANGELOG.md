@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.4] 2019-27-08
+
+### Changed
+- nodes/*.js - Modified the majority of the nodes to include the message when generating an error. This allows errors to be caught using a catch node.
+
+
 ## [0.2.3] 2019-23-08
 
 ### Changed

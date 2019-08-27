@@ -43,7 +43,7 @@ module.exports = function(RED) {
         credentials = message.payload.keypair;
       } else {
         this.setStatusFailed('Secret or Keypair Missing');
-        this.error('Secret / Keypair Missing');
+        this.error('Secret / Keypair Missing', message);
         return;
       }
 
@@ -53,7 +53,7 @@ module.exports = function(RED) {
         this.send(message);
       } catch (error) {
         this.setStatusFailed('Error');
-        this.error(error);
+        this.error(error, message);
         return;
       }
     }
